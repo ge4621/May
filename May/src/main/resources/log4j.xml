@@ -12,7 +12,8 @@
 	
 	<!-- Application Loggers -->
 	<logger name="com.yoon.may">
-		<level value="info" />
+		<level value="DEBUG" />
+		<appender-ref ref="console" />
 	</logger>
 	
 	<!-- 3rdparty Loggers -->

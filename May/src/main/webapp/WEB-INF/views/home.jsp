@@ -81,15 +81,16 @@ html {
 
     <div class="login-box">
   <h2>Login</h2>
-  <form action="login.member">
+  <form action="login.member" method="post">
     <div class="user-box">
-      <input type="text" name="" required="">
+      <input type="text" name="userId" required="">
       <label>Username</label>
     </div>
     <div class="user-box">
-      <input type="password" name="" required="">
+      <input type="password" name="userPwd" required="">
       <label>Password</label>
     </div>
+    <button type="submit" style="display:none;"></button>
   </form>
 </div>
 
