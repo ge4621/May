@@ -117,6 +117,91 @@ body {
   padding: 10px;
   border-bottom: 1px solid #ddd;
 }
+/* =====팝업창 영역====== */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: #ffffff;
+  width: 420px;
+  padding: 25px 30px;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+
+.modal-content h3 {
+  margin: 0 0 20px;
+  font-size: 20px;
+  text-align: center;
+  color: #333;
+}
+
+.modal-btn {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.modal-btn button {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+}
+
+.modal-btn button:first-child {
+  background: #03a9f4;
+  color: white;
+}
+
+.modal-btn button:last-child {
+  background: #e0e0e0;
+}
+
+.modal-content input[type="text"],
+.modal-content textarea {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.modal-content textarea {
+  resize: none;
+  height: 80px;
+}
+
+.modal-content input:focus,
+.modal-content textarea:focus {
+  border-color: #03a9f4;
+  outline: none;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.close {
+  cursor: pointer;
+  font-size: 18px;
+  color: #999;
+}
+
+.close:hover {
+  color: #333;
+}
 </style>
 </head>
 
@@ -170,6 +255,29 @@ body {
     </ul>
   </div>
 
+</div>
+
+<!-- 일정 등록 팝업 -->
+<div id="scheduleModal" class="modal">
+  <div class="modal-content">
+
+    <div class="modal-header">
+      <h3>일정 등록</h3>
+      <span class="close" onclick="closeModal()">✕</span>
+    </div>
+
+    <input type="hidden" id="scheduleDate">
+
+    <input type="text" id="scheduleTitle" placeholder="일정 제목">
+
+    <textarea id="scheduleMemo" placeholder="메모"></textarea>
+
+    <div class="modal-btn">
+      <button onclick="saveSchedule()">저장</button>
+      <button onclick="closeModal()">취소</button>
+    </div>
+
+  </div>
 </div>
 
 <script>
@@ -234,14 +342,30 @@ function nextMonth() {
 }
 //하단 일정 리스트 조회 부분 함수
 function selectDate(day) {
-  document.getElementById("selectedDate").innerText =
+	const selectedDate = currentYear + "-" + String(currentMonth + 1).padStart(2, "0") + "-" + String(day).padStart(2, "0");
+    document.getElementById("selectedDate").innerText =
     currentYear + "년 " + (currentMonth + 1) + "월 " + day + "일 일정";
 
-  // 나중에 Ajax로 일정 조회하면 여기서 교체
-  document.getElementById("todoList").innerHTML =
-    "<li>📌 선택한 날짜의 일정이 여기에 표시됩니다</li>";
+    // 나중에 Ajax로 일정 조회하면 여기서 교체
+    document.getElementById("todoList").innerHTML =
+    	"<li>📌 선택한 날짜의 일정이 여기에 표시됩니다</li>";
+    
+    addSchedule(selectedDate); //일정 추가(일정 등록을 위한 팝업창)
+}
+//일정 추가 팝업
+function addSchedule(date){
+	document.getElementById("scheduleDate").value = date;
+	document.getElementById("scheduleModal").style.display = "flex";
+}
+//팝업창 닫기
+function closeModal() {
+	  document.getElementById("scheduleModal").style.display = "none";
 }
 
+//일정 저장
+function saveSchedule(){
+	
+}
 renderCalendar();
 </script>
 
