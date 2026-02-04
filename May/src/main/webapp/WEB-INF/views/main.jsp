@@ -364,7 +364,30 @@ function closeModal() {
 
 //일정 저장
 function saveSchedule(){
-	
+	 const date = $("#scheduleDate").val();
+	 const title = $("#scheduleTitle").val();
+	 const memo = $("#scheduleMemo").val();
+	 
+	 $.ajax({
+		 url : "saveSchedule.do",
+		 type : "post",
+		 data : {
+			 scheduleDate: date,
+		      scheduleTitle: title,
+		      scheduleMemo: memo
+		 },
+		 success:function(result){
+			 if(result.success){
+				 alert("일정이 등록되었습니다.");
+				 closeModal();
+			 }else{
+				 alert("등록 실패");
+			 }
+		 },
+		 error : function(){
+			 alert("서버 오류 발생")
+		 }
+	 });
 }
 renderCalendar();
 </script>

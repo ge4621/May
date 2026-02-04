@@ -32,6 +32,16 @@
 	<logger name="org.springframework.web">
 		<level value="info" />
 	</logger>
+	<!-- sql문 -->
+	<logger name="org.mybatis">
+	    <level value="DEBUG" />
+	    <appender-ref ref="console" />
+	</logger>
+
+	<logger name="java.sql">
+	    <level value="DEBUG" />
+	    <appender-ref ref="console" />
+	</logger>
 
 	<!-- Root Logger -->
 	<root>
