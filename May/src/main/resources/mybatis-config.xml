@@ -8,7 +8,7 @@
 	
 	<typeAliases>
 		<typeAlias type="com.yoon.may.member.model.vo.Member" alias="Member"/>
-		<typeAlias type="com.yoon.may.member.model.vo.Schedule" alias="Schedule"/>
+		<typeAlias type="com.yoon.may.schedule.model.vo.Schedule" alias="Schedule"/>
 	</typeAliases>
 	
 	<mappers>

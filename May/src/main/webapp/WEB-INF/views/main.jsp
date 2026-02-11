@@ -46,7 +46,8 @@ body {
 
 /* ====== 메인 영역 ====== */
 .container {
-  width: 1000px;
+  width: 90%;
+  max-width: 1400px;
   margin: 30px auto;
 }
 
@@ -76,7 +77,7 @@ body {
 .calendar th,
 .calendar td {
   width: 14.2%;
-  height: 80px;
+  height: 120px;
   border: 1px solid #ddd;
   text-align: right;
   padding: 8px;
@@ -202,6 +203,44 @@ body {
 .close:hover {
   color: #333;
 }
+
+/* ===== 2단 레이아웃 ===== */
+.main-layout {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+}
+
+.calendar {
+  flex: 2;
+}
+
+.todo-section {
+  flex: 1;
+  margin-top: 0;   /* 🔥 기존 margin-top 제거 */
+}
+
+/* 일정 헤더 */
+.todo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.todo-header button {
+  padding: 6px 12px;
+  background: #03a9f4;
+  border: none;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.todo-header button:hover {
+  background: #0288d1;
+}
 </style>
 </head>
 
@@ -220,6 +259,8 @@ body {
 
 <!-- ===== 메인 컨텐츠 ===== -->
 <div class="container">
+	
+<div class="main-layout">
 
   <!-- 달력 -->
   <div class="calendar">
@@ -247,14 +288,18 @@ body {
 
   <!-- 일정 (당일 일정 리스트(오늘 일정) 및 날짜 클릭시 일정(X월 X일 일정) 리스트 구분)-->
   <div class="todo-section">
+  <div class="todo-header">
     <h3 id="selectedDate">오늘 일정</h3>
+    <button onclick="addSchedule()">+ 일정 추가</button>
+  </div>
+  
     <ul class="todo-list" id="todoList">
       <li>✔ 프로젝트 기획 정리</li>
       <li>✔ 로그인 기능 점검</li>
       <li>✔ 일정 테이블 설계</li>
     </ul>
   </div>
-
+</div>
 </div>
 
 <!-- 일정 등록 팝업 -->
@@ -279,11 +324,12 @@ body {
 
   </div>
 </div>
-
+<script src="https://code.jquery.com/jquery-3.4.1.js"></script>
 <script>
 let today = new Date();
 let currentMonth = today.getMonth();
 let currentYear = today.getFullYear();
+let selectedDateGlobal = "";
 
 function renderCalendar() {
   const firstDay = new Date(currentYear, currentMonth, 1).getDay();
@@ -322,6 +368,7 @@ function renderCalendar() {
   }
   tbody.appendChild(row);
 }
+
 //◀클릭시 실행 함수
 function prevMonth() {
   currentMonth--;
@@ -331,6 +378,7 @@ function prevMonth() {
   }
   renderCalendar();
 }
+
 //▶클릭시 실행 함수
 function nextMonth() {
   currentMonth++;
@@ -340,6 +388,7 @@ function nextMonth() {
   }
   renderCalendar();
 }
+
 //하단 일정 리스트 조회 부분 함수
 function selectDate(day) {
 	const selectedDate = currentYear + "-" + String(currentMonth + 1).padStart(2, "0") + "-" + String(day).padStart(2, "0");
@@ -347,15 +396,26 @@ function selectDate(day) {
     currentYear + "년 " + (currentMonth + 1) + "월 " + day + "일 일정";
 
     // 나중에 Ajax로 일정 조회하면 여기서 교체
-    document.getElementById("todoList").innerHTML =
-    	"<li>📌 선택한 날짜의 일정이 여기에 표시됩니다</li>";
+//    document.getElementById("todoList").innerHTML =
+//    	"<li>📌 선택한 날짜의 일정이 여기에 표시됩니다</li>";
     
-    addSchedule(selectedDate); //일정 추가(일정 등록을 위한 팝업창)
+   // addSchedule(selectedDate); //일정 추가(일정 등록을 위한 팝업창)
+    selectedDateGlobal = selectedDate;
+    loadSchedule(selectedDate);
 }
+
 //일정 추가 팝업
-function addSchedule(date){
-	document.getElementById("scheduleDate").value = date;
-	document.getElementById("scheduleModal").style.display = "flex";
+function addSchedule(){
+	
+	if (!selectedDateGlobal) {
+        alert("날짜를 먼저 선택하세요.");
+        return;
+    }
+	
+	document.getElementById("scheduleDate").value = selectedDateGlobal; //날짜 세팅
+	document.getElementById("scheduleTitle").value = "";
+    document.getElementById("scheduleMemo").value = "";
+	document.getElementById("scheduleModal").style.display = "flex"; //모달 열기
 }
 //팝업창 닫기
 function closeModal() {
@@ -364,6 +424,7 @@ function closeModal() {
 
 //일정 저장
 function saveSchedule(){
+	
 	 const date = $("#scheduleDate").val();
 	 const title = $("#scheduleTitle").val();
 	 const memo = $("#scheduleMemo").val();
@@ -372,14 +433,15 @@ function saveSchedule(){
 		 url : "saveSchedule.do",
 		 type : "post",
 		 data : {
-			 scheduleDate: date,
-		      scheduleTitle: title,
-		      scheduleMemo: memo
+			  startDate: date,
+		      title: title,
+		      content: memo
 		 },
 		 success:function(result){
 			 if(result.success){
 				 alert("일정이 등록되었습니다.");
 				 closeModal();
+				 //loadSchedule(selectedDateGlobal);
 			 }else{
 				 alert("등록 실패");
 			 }
@@ -389,7 +451,48 @@ function saveSchedule(){
 		 }
 	 });
 }
+
+function loadSchedule(date){
+	console.log('확인 : '+ date);
+	$.ajax({
+		url : "selectSchedule.do",
+		type : "get",
+		data:{
+			startDate : date
+		},
+		success : function(list){
+			let htm = "";
+			if(!list || list.length == 0){
+				html = "<li>일정이 없습니다.</li>";
+			}else{
+				for(let s of list){
+					html += "<li>📌 " + s.title + "</li>";
+				}
+			}
+			$("#todoList").html(html);
+		},
+		error : function(){
+			alert("일정 조회 시패");
+		}
+	});
+}
 renderCalendar();
+//페이지 로드 시 오늘 날짜 자동 조회
+$(document).ready(function(){
+
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth()+1).padStart(2,"0");
+    const dd = String(today.getDate()).padStart(2,"0");
+
+    const todayStr = yyyy + "-" + mm + "-" + dd;
+
+    selectedDateGlobal = todayStr;
+
+    document.getElementById("selectedDate").innerText =
+        yyyy + "년 " + (today.getMonth()+1) + "월 " + today.getDate() + "일 일정";
+
+    loadSchedule(todayStr);
+});
 </script>
 
 </body>
