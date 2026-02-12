@@ -20,7 +20,6 @@ public class ScheduleDao {
 		Map<String, Object> param = new HashMap<String, Object>();
 		param.put("schedule",schedule);
 		param.put("userNo",userNo);
-		
 		return sqlSession.insert("saveSehedule", param);
 	}
 	
@@ -28,8 +27,27 @@ public class ScheduleDao {
 		Map<String, Object> param = new HashMap<String, Object>();
 		param.put("startDate",schedule.getStartDate());
 		param.put("userNo",userNo);
-		
 		return sqlSession.selectList("selectSchedule",param);
 	}
-
+	
+	public Schedule detailSchedule(Schedule schedule, String userNo) {
+		Map<String, Object> param = new HashMap<String, Object>();
+		param.put("schedule",schedule);
+		param.put("userNo",userNo);
+		return sqlSession.selectOne("detailSchedule",param);
+	}
+	
+	public int updateSchedule(Schedule schedule, String userNo) {
+		Map<String, Object> param = new HashMap<String, Object>();
+		param.put("schedule",schedule);
+		param.put("userNo",userNo);
+		return sqlSession.update("updateSchedule",param);
+	}
+	
+	public int deleteSchedule(Schedule schedule, String userNo) {
+		Map<String, Object> param = new HashMap<String, Object>();
+		param.put("schedule",schedule);
+		param.put("userNo",userNo);
+		return sqlSession.delete("deleteSchedule", param);
+	}
 }

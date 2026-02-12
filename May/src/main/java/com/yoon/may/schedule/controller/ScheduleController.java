@@ -44,10 +44,55 @@ public class ScheduleController {
 	@ResponseBody
 	public List<Schedule> selectSchedule(Schedule schedule,HttpSession session) {
 		Member loginMember = (Member)session.getAttribute("loginMember");
-		
 		String userNo = loginMember.getUserNo();
+		
 		List<Schedule> scheduleList = scheduleService.selectSchedule(schedule,userNo);
-		System.out.println("scheduleList : " + scheduleList.size());
 		return scheduleList;
 	}
+	
+	@RequestMapping("DetailSchedule.do")
+	@ResponseBody
+	public Schedule detailSchedule(Schedule schedule, HttpSession session){
+		Member loginMember = (Member)session.getAttribute("loginMember");
+		String userNo = loginMember.getUserNo();
+		
+		Schedule scheduleDetail = scheduleService.detailSchedule(schedule,userNo);
+		return scheduleDetail;
+	}
+	
+	@RequestMapping("updateSchedule.do")
+	@ResponseBody
+	public Map<String, Object> updateSchedule(Schedule schedule, HttpSession session) {
+		Map<String, Object> result = new HashMap<String, Object>();
+		
+		Member loginMember = (Member)session.getAttribute("loginMember");
+		String userNo = loginMember.getUserNo();
+		
+		int updateSchedule = scheduleService.updateSchedule(schedule,userNo);
+		
+		if(updateSchedule > 0) {
+			result.put("success", true);
+		}else {
+			result.put("success", false);
+		}
+		return result;
+	}
+	
+	@RequestMapping("deleteSchedule.do")
+	@ResponseBody
+	public Map<String, Object> deleteSchedule(Schedule schedule, HttpSession session) {
+		Map<String, Object> result = new HashMap<String, Object>();
+		Member loginMember = (Member)session.getAttribute("loginMember");
+		String userNo = loginMember.getUserNo();
+		
+		int deleteSchedule = scheduleService.deleteSchedule(schedule,userNo);
+		
+		if(deleteSchedule > 0) {
+			result.put("success", true);
+		}else {
+			result.put("success", false);
+		}
+		return result;
+	}
+	
 }

@@ -79,13 +79,20 @@ body {
   width: 14.2%;
   height: 120px;
   border: 1px solid #ddd;
-  text-align: right;
-  padding: 8px;
-  cursor: pointer;
 }
-
+/* 요일 */
 .calendar th {
   background: #f0f0f0;
+  text-align: center;   
+  vertical-align: middle;
+}
+
+/* 날짜 */
+.calendar td {
+  text-align: left;     
+  vertical-align: top;  
+  padding: 8px;
+  cursor: pointer;
 }
 
 .calendar td:hover {
@@ -294,9 +301,7 @@ body {
   </div>
   
     <ul class="todo-list" id="todoList">
-      <li>✔ 프로젝트 기획 정리</li>
-      <li>✔ 로그인 기능 점검</li>
-      <li>✔ 일정 테이블 설계</li>
+		<!-- ajax으로 데이터 조회 -->
     </ul>
   </div>
 </div>
@@ -318,8 +323,10 @@ body {
     <textarea id="scheduleMemo" placeholder="메모"></textarea>
 
     <div class="modal-btn">
-      <button onclick="saveSchedule()">저장</button>
-      <button onclick="closeModal()">취소</button>
+      <button id="saveBtn" onclick="saveSchedule()">저장</button>
+      <button id="updateBtn" onclick="updateSchedule()" style="display:none;">수정</button>
+  	  <button id="deleteBtn" onclick="deleteSchedule()" style="display:none;">삭제</button>
+     <!-- <button onclick="closeModal()">취소</button>  -->
     </div>
 
   </div>
@@ -330,6 +337,9 @@ let today = new Date();
 let currentMonth = today.getMonth();
 let currentYear = today.getFullYear();
 let selectedDateGlobal = "";
+
+let modalMode = "add";
+let currentScheduleNo = null;
 
 function renderCalendar() {
   const firstDay = new Date(currentYear, currentMonth, 1).getDay();
@@ -392,30 +402,48 @@ function nextMonth() {
 //하단 일정 리스트 조회 부분 함수
 function selectDate(day) {
 	const selectedDate = currentYear + "-" + String(currentMonth + 1).padStart(2, "0") + "-" + String(day).padStart(2, "0");
-    document.getElementById("selectedDate").innerText =
-    currentYear + "년 " + (currentMonth + 1) + "월 " + day + "일 일정";
+   
+	// 오늘 날짜 만들기
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth()+1).padStart(2,"0");
+    const dd = String(today.getDate()).padStart(2,"0");
+    const todayStr = yyyy + "-" + mm + "-" + dd;
+	
+    if (selectedDate === todayStr) {
+        document.getElementById("selectedDate").innerText = "오늘 일정";
+    } else {
+        document.getElementById("selectedDate").innerText =
+            currentYear + "년 " + (currentMonth + 1) + "월 " + day + "일 일정";
+    }
 
-    // 나중에 Ajax로 일정 조회하면 여기서 교체
-//    document.getElementById("todoList").innerHTML =
-//    	"<li>📌 선택한 날짜의 일정이 여기에 표시됩니다</li>";
-    
-   // addSchedule(selectedDate); //일정 추가(일정 등록을 위한 팝업창)
     selectedDateGlobal = selectedDate;
     loadSchedule(selectedDate);
 }
 
 //일정 추가 팝업
 function addSchedule(){
-	
-	if (!selectedDateGlobal) {
+
+    if (!selectedDateGlobal) {
         alert("날짜를 먼저 선택하세요.");
         return;
     }
-	
-	document.getElementById("scheduleDate").value = selectedDateGlobal; //날짜 세팅
-	document.getElementById("scheduleTitle").value = "";
-    document.getElementById("scheduleMemo").value = "";
-	document.getElementById("scheduleModal").style.display = "flex"; //모달 열기
+
+    modalMode = "add";
+    currentScheduleNo = null;
+    
+    $("#scheduleDate").val(selectedDateGlobal);
+
+    $("#scheduleTitle").prop("readonly", false);
+    $("#scheduleMemo").prop("readonly", false);
+
+    $("#saveBtn").show();
+    $("#updateBtn").hide();
+    $("#deleteBtn").hide();
+
+    $("#scheduleTitle").val("");
+    $("#scheduleMemo").val("");
+
+    $("#scheduleModal").css("display","flex");
 }
 //팝업창 닫기
 function closeModal() {
@@ -441,7 +469,7 @@ function saveSchedule(){
 			 if(result.success){
 				 alert("일정이 등록되었습니다.");
 				 closeModal();
-				 //loadSchedule(selectedDateGlobal);
+				 loadSchedule(date);
 			 }else{
 				 alert("등록 실패");
 			 }
@@ -453,7 +481,6 @@ function saveSchedule(){
 }
 
 function loadSchedule(date){
-	console.log('확인 : '+ date);
 	$.ajax({
 		url : "selectSchedule.do",
 		type : "get",
@@ -461,12 +488,12 @@ function loadSchedule(date){
 			startDate : date
 		},
 		success : function(list){
-			let htm = "";
+			let html = "";
 			if(!list || list.length == 0){
 				html = "<li>일정이 없습니다.</li>";
 			}else{
 				for(let s of list){
-					html += "<li>📌 " + s.title + "</li>";
+					html += "<li onclick='openDetail(" + s.scheduleNo+ ")'>📌" + s.title + "</li>";
 				}
 			}
 			$("#todoList").html(html);
@@ -477,6 +504,81 @@ function loadSchedule(date){
 	});
 }
 renderCalendar();
+
+function openDetail(scheduleNo) {
+    modalMode = "detail";
+    currentScheduleNo = scheduleNo;
+    $.ajax({
+        url: "DetailSchedule.do",
+        type: "get",
+        data: { scheduleNo: scheduleNo },
+        success: function(s){
+            $("#scheduleTitle").val(s.title);
+            $("#scheduleMemo").val(s.content);
+
+            $("#scheduleTitle").prop("readonly", true);
+            $("#scheduleMemo").prop("readonly", true);
+
+            $("#saveBtn").hide();
+            $("#updateBtn").show();
+            $("#deleteBtn").show();
+
+            $("#scheduleModal").css("display","flex");
+        }
+    });
+}
+
+function updateSchedule(){
+
+    if(modalMode == "detail"){
+        // 수정 가능 상태로 변경
+        modalMode = "edit";
+
+        $("#scheduleTitle").prop("readonly", false);
+        $("#scheduleMemo").prop("readonly", false);
+
+        $("#updateBtn").text("저장");
+        return;
+    }
+
+    if(modalMode == "edit"){
+
+        $.ajax({
+            url: "updateSchedule.do",
+            type: "post",
+            data:{
+                scheduleNo: currentScheduleNo,
+                title: $("#scheduleTitle").val(),
+                content: $("#scheduleMemo").val()
+            },
+            success:function(result){
+                alert("수정 완료");
+                $("#updateBtn").text("수정");
+                modalMode = "add";
+                closeModal();
+                loadSchedule(selectedDateGlobal);
+            }
+        });
+    }
+}
+
+function deleteSchedule(){
+
+    if(!confirm("삭제하시겠습니까?")) return;
+
+    $.ajax({
+        url: "deleteSchedule.do",
+        type: "post",
+        data:{ scheduleNo: currentScheduleNo },
+        success:function(result){
+            alert("삭제 완료");
+            closeModal();
+            loadSchedule(selectedDateGlobal);
+        }
+    });
+}
+
+
 //페이지 로드 시 오늘 날짜 자동 조회
 $(document).ready(function(){
 
@@ -488,8 +590,7 @@ $(document).ready(function(){
 
     selectedDateGlobal = todayStr;
 
-    document.getElementById("selectedDate").innerText =
-        yyyy + "년 " + (today.getMonth()+1) + "월 " + today.getDate() + "일 일정";
+    document.getElementById("selectedDate").innerText = "오늘 일정";
 
     loadSchedule(todayStr);
 });

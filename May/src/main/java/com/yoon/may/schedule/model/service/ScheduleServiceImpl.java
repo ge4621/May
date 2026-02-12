@@ -23,4 +23,19 @@ public class ScheduleServiceImpl implements ScheduleService{
 	public List<Schedule> selectSchedule(Schedule schedule, String userNo) {
 		return scheduleDao.selectSchedule(schedule,userNo);
 	}
+
+	@Override
+	public Schedule detailSchedule(Schedule schedule, String userNo) {
+		return scheduleDao.detailSchedule(schedule,userNo);
+	}
+
+	@Override
+	public int updateSchedule(Schedule schedule, String userNo) {
+		return scheduleDao.updateSchedule(schedule,userNo);
+	}
+
+	@Override
+	public int deleteSchedule(Schedule schedule, String userNo) {
+		return scheduleDao.deleteSchedule(schedule,userNo);
+	}
 }

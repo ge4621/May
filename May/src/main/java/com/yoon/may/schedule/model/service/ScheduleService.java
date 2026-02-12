@@ -10,5 +10,11 @@ public interface ScheduleService {
 	int saveSchedule(Schedule schedule,String userNo);
 	
 	List<Schedule> selectSchedule(Schedule schedule, String userNo);
+	
+	Schedule detailSchedule(Schedule schedule, String userNo);
+	
+	int updateSchedule(Schedule schedule,String userNo);
+	
+	int deleteSchedule(Schedule schedule,String userNo);
 
 }
