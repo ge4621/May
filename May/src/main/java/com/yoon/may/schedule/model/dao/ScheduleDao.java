@@ -50,4 +50,5 @@ public class ScheduleDao {
 		param.put("userNo",userNo);
 		return sqlSession.delete("deleteSchedule", param);
 	}
+	
 }

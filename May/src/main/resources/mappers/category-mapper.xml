@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "mybatis-3-mapper.dtd" >
+<mapper namespace="categoryMapper">
+	<resultMap type="Category" id="resultCategory">
+		<result column="category_No" property="categoryNo" />
+		<result column="category_Name" property="categoryName" />
+		<result column="user_no" property="userNo" />
+	</resultMap>
+	
+	<select id = "selectCategory" resultMap="resultCategory">
+		select *
+		from category
+		where user_no = #{userNo}
+	</select>
+
+</mapper>

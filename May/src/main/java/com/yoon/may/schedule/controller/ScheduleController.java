@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.yoon.may.member.model.vo.Member;
 import com.yoon.may.schedule.model.service.ScheduleService;
 import com.yoon.may.schedule.model.service.ScheduleServiceImpl;
+import com.yoon.may.schedule.model.vo.Category;
 import com.yoon.may.schedule.model.vo.Schedule;
 
 @Controller
@@ -24,7 +25,7 @@ public class ScheduleController {
 	
 	@RequestMapping("saveSchedule.do")
 	@ResponseBody
-	public Map<String, Object> saveSchedule(Schedule schedule,HttpSession session) {
+	public Map<String, Object> saveSchedule(Schedule schedule,HttpSession session , Category category) {
 		Map<String, Object> result = new HashMap<String, Object>();
 		
 		Member loginMember = (Member)session.getAttribute("loginMember");

@@ -16,5 +16,5 @@ public interface ScheduleService {
 	int updateSchedule(Schedule schedule,String userNo);
 	
 	int deleteSchedule(Schedule schedule,String userNo);
-
+	
 }

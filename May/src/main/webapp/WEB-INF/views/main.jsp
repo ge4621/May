@@ -248,6 +248,22 @@ body {
 .todo-header button:hover {
   background: #0288d1;
 }
+
+.modal-content select {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  background: #fff;
+}
+
+.modal-content select:focus {
+  border-color: #03a9f4;
+  outline: none;
+}
+
 </style>
 </head>
 
@@ -307,7 +323,7 @@ body {
 </div>
 </div>
 
-<!-- 일정 등록 팝업 -->
+<!-- 모달 팝업 -->
 <div id="scheduleModal" class="modal">
   <div class="modal-content">
 
@@ -317,6 +333,10 @@ body {
     </div>
 
     <input type="hidden" id="scheduleDate">
+    
+    <!-- 카테고리 선택 -->
+    <select id="categoryId" class="modal-select">
+    </select>
 
     <input type="text" id="scheduleTitle" placeholder="일정 제목">
 
@@ -399,7 +419,7 @@ function nextMonth() {
   renderCalendar();
 }
 
-//하단 일정 리스트 조회 부분 함수
+//일정 리스트 조회 부분 함수
 function selectDate(day) {
 	const selectedDate = currentYear + "-" + String(currentMonth + 1).padStart(2, "0") + "-" + String(day).padStart(2, "0");
    
@@ -418,6 +438,22 @@ function selectDate(day) {
 
     selectedDateGlobal = selectedDate;
     loadSchedule(selectedDate);
+}
+
+function selectCategory(){
+	
+	$.ajax({
+		url : "selectCategory.do" ,
+		type : "get" ,
+		success : function(list){
+			let html = "<option value=''>카테고리 선택</option>";
+			
+			for(let c of list){
+				html += "<option value='"+c.categoryId+"'>" + c.categoryName + "</option>";
+			}
+			 $("#categoryId").html(html);
+		}
+	});
 }
 
 //일정 추가 팝업
@@ -456,6 +492,7 @@ function saveSchedule(){
 	 const date = $("#scheduleDate").val();
 	 const title = $("#scheduleTitle").val();
 	 const memo = $("#scheduleMemo").val();
+	 const categoryId = $("#categoryId").val();
 	 
 	 $.ajax({
 		 url : "saveSchedule.do",
@@ -463,7 +500,8 @@ function saveSchedule(){
 		 data : {
 			  startDate: date,
 		      title: title,
-		      content: memo
+		      content: memo,
+		      category: categoryId
 		 },
 		 success:function(result){
 			 if(result.success){
@@ -581,6 +619,8 @@ function deleteSchedule(){
 
 //페이지 로드 시 오늘 날짜 자동 조회
 $(document).ready(function(){
+	
+	selectCategory(); //카테고리 조회
 
     const yyyy = today.getFullYear();
     const mm = String(today.getMonth()+1).padStart(2,"0");

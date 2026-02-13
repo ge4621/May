@@ -9,10 +9,12 @@
 	<typeAliases>
 		<typeAlias type="com.yoon.may.member.model.vo.Member" alias="Member"/>
 		<typeAlias type="com.yoon.may.schedule.model.vo.Schedule" alias="Schedule"/>
+		<typeAlias type="com.yoon.may.schedule.model.vo.Category" alias="Category"/>
 	</typeAliases>
 	
 	<mappers>
 		<mapper resource="/mappers/member-mapper.xml"/>
 		<mapper resource="/mappers/schedule-mapper.xml"/>
+		<mapper resource="/mappers/category-mapper.xml"/>
 	</mappers>
 </configuration>

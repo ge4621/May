@@ -38,4 +38,5 @@ public class ScheduleServiceImpl implements ScheduleService{
 	public int deleteSchedule(Schedule schedule, String userNo) {
 		return scheduleDao.deleteSchedule(schedule,userNo);
 	}
+
 }
