@@ -4,7 +4,7 @@
 	<resultMap type="Category" id="resultCategory">
 		<result column="category_No" property="categoryNo" />
 		<result column="category_Name" property="categoryName" />
-		<result column="user_no" property="userNo" />
+		<result column="user_No" property="userNo" />
 	</resultMap>
 	
 	<select id = "selectCategory" resultMap="resultCategory">

@@ -32,6 +32,7 @@ body {
 .header .logo {
   font-size: 20px;
   font-weight: bold;
+  cursor: pointer;
 }
 
 .header .menu a {
@@ -271,9 +272,9 @@ body {
 
 <!-- ===== 상단 메뉴 ===== -->
 <div class="header">
-  <div class="logo">May Planner</div>
+  <div class="logo" onclick="location.href='/may/main'">May Planner</div>
   <div class="menu">
-    <a href="#">Dashboard</a>
+    <a href="dashBoard">Dashboard</a>
     <a href="#">To-Do</a>
     <a href="#">Calendar</a>
     <a href="logout.member">Logout</a>
@@ -449,7 +450,7 @@ function selectCategory(){
 			let html = "<option value=''>카테고리 선택</option>";
 			
 			for(let c of list){
-				html += "<option value='"+c.categoryId+"'>" + c.categoryName + "</option>";
+				html += "<option value='"+c.categoryNo+"'>" + c.categoryName + "</option>";
 			}
 			 $("#categoryId").html(html);
 		}
@@ -492,7 +493,7 @@ function saveSchedule(){
 	 const date = $("#scheduleDate").val();
 	 const title = $("#scheduleTitle").val();
 	 const memo = $("#scheduleMemo").val();
-	 const categoryId = $("#categoryId").val();
+	 const categoryNo = $("#categoryId").val();
 	 
 	 $.ajax({
 		 url : "saveSchedule.do",
@@ -501,7 +502,7 @@ function saveSchedule(){
 			  startDate: date,
 		      title: title,
 		      content: memo,
-		      category: categoryId
+		      categoryNo: categoryNo
 		 },
 		 success:function(result){
 			 if(result.success){
@@ -553,9 +554,11 @@ function openDetail(scheduleNo) {
         success: function(s){
             $("#scheduleTitle").val(s.title);
             $("#scheduleMemo").val(s.content);
+            $("#categoryId").val(s.categoryNo);
 
             $("#scheduleTitle").prop("readonly", true);
             $("#scheduleMemo").prop("readonly", true);
+            $("#categoryId").prop("disabled", true);
 
             $("#saveBtn").hide();
             $("#updateBtn").show();
@@ -574,6 +577,7 @@ function updateSchedule(){
 
         $("#scheduleTitle").prop("readonly", false);
         $("#scheduleMemo").prop("readonly", false);
+        $("#categoryId").prop("disabled", false);
 
         $("#updateBtn").text("저장");
         return;
@@ -633,6 +637,7 @@ $(document).ready(function(){
     document.getElementById("selectedDate").innerText = "오늘 일정";
 
     loadSchedule(todayStr);
+    
 });
 </script>
 

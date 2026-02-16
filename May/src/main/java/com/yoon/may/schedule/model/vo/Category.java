@@ -15,5 +15,5 @@ public class Category {
 	
 	private String categoryNo;
 	private String categoryName;
-	
+	private String userNo;
 }
