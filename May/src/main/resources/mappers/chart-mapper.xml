@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "mybatis-3-mapper.dtd" >
+<mapper namespace="chartMapper">
+
+<select id="selectMonthSchedule" resultType="int">
+	select count(*)
+	from schedule
+	where user_no = #{userNo}
+	and start_date &lt;= LAST_DAY(TO_DATE(#{dashBoard.currentMonth},'YYYY-MM'))
+	and (
+		end_date is null
+		or end_date &gt;= TRUNC(TO_DATE(#{dashBoard.currentMonth},'YYYY-MM'),'MM')
+	)
+</select>
+
+<select id="selectDategoryCnt" >
+	select count(*) as cnt , category_no
+	from schedule
+	where user_no = #{userNo}
+	and start_date &lt;= LAST_DAY(TO_DATE(#{dashBoard.currentMonth},'YYYY-MM'))
+	and (
+		end_date is null
+		or end_date &gt;= TRUNC(TO_DATE(#{dashBoard.currentMonth},'YYYY-MM'),'MM')
+	)
+	group by category_no order by cnt desc
+</select>
+</mapper> 

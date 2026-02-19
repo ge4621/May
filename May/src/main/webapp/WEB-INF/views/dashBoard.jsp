@@ -11,6 +11,7 @@
   display: flex;
   gap: 20px;
   margin-bottom: 30px;
+  padding: 20px;
 }
 
 .card {
@@ -56,7 +57,7 @@
 </style>
 </head>
 <body>
-
+<jsp:include page="header.jsp" />
 <div class="container">
 
   <!-- ===== 상단 요약 카드 ===== -->
@@ -64,7 +65,7 @@
 
     <div class="card">
       <h4>이번 달 일정</h4>
-      <p class="big-number">24</p>
+      <p class="big-number" id="monthCount">0</p>
     </div>
 
     <div class="card">
@@ -128,6 +129,49 @@
   </div>
 
 </div>
+<script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+<script type="text/javascript">
+let now = new Date();
+let currentMonth = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, '0');
+
+$(function(){
+	initDashBoard();
+})
+
+function initDashBoard(){
+	selectMonthSc(currentMonth);
+	//selectFinshSc();
+	//selectFinshRate();
+	selectCategorySc(currentMonth);
+}
+//이번달 일정개수
+function selectMonthSc(currentMonth){
+	$.ajax({
+		url : "selectMonthSc.do",
+		type : "get",
+		data : {
+			currentMonth : currentMonth
+		},
+		success : function(s){
+			$("#monthCount").text(s);
+		}
+	})
+}
+
+function selectCategorySc(currentMonth){
+	$.ajax({
+		url : "selectCategorySc.do",
+		type : "get",
+		data : {
+			currentMonth : currentMonth
+		},
+		success : function(s){
+			console.log(s)
+		}
+	})
+}
+
+</script>
 
 </body>
 </html>

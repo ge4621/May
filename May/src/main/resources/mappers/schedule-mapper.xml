@@ -60,6 +60,7 @@
 		set title = #{schedule.title}
 		, content = #{schedule.content}
 		, update_date = sysdate
+		, category_no = #{schedule.categoryNo}
 		where user_no = #{userNo}
 		and schedule_no = #{schedule.scheduleNo}
 	</update>

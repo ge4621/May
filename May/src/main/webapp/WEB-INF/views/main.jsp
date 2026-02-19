@@ -18,33 +18,6 @@ body {
   background: #f4f6f8;
 }
 
-/* ====== 상단 메뉴바 ====== */
-.header {
-  height: 60px;
-  background: #333;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 30px;
-}
-
-.header .logo {
-  font-size: 20px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.header .menu a {
-  color: white;
-  margin-left: 20px;
-  text-decoration: none;
-}
-
-.header .menu a:hover {
-  text-decoration: underline;
-}
-
 /* ====== 메인 영역 ====== */
 .container {
   width: 90%;
@@ -269,17 +242,7 @@ body {
 </head>
 
 <body>
-
-<!-- ===== 상단 메뉴 ===== -->
-<div class="header">
-  <div class="logo" onclick="location.href='/may/main'">May Planner</div>
-  <div class="menu">
-    <a href="dashBoard">Dashboard</a>
-    <a href="#">To-Do</a>
-    <a href="#">Calendar</a>
-    <a href="logout.member">Logout</a>
-  </div>
-</div>
+<jsp:include page="header.jsp" />
 
 <!-- ===== 메인 컨텐츠 ===== -->
 <div class="container">
@@ -591,7 +554,8 @@ function updateSchedule(){
             data:{
                 scheduleNo: currentScheduleNo,
                 title: $("#scheduleTitle").val(),
-                content: $("#scheduleMemo").val()
+                content: $("#scheduleMemo").val(),
+                categoryNo : $("#categoryId").val()
             },
             success:function(result){
                 alert("수정 완료");
