@@ -23,11 +23,12 @@ public class DashBoardDao {
 		return sqlSession.selectOne("selectMonthSchedule",param);
 	}
 	
-	public List<DashBoard> selectDategoryCnt(DashBoard dashBoard, String userNo){
+	public List<DashBoard> selectCategoryCnt(DashBoard dashBoard, String userNo){
 		Map<String, Object> param = new HashMap<String, Object>();
 		param.put("dashBoard", dashBoard);
 		param.put("userNo", userNo);
-		return sqlSession.selectOne("selectDategoryCnt", param);
+		System.out.println("dao : " + param);
+		return sqlSession.selectList("selectCategoryCnt", param);
 	}
 
 }

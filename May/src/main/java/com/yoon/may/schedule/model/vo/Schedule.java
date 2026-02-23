@@ -22,4 +22,5 @@ public class Schedule {
 		private Date startDate;
 		
 		private String categoryNo;
+		private int cnt;
 }

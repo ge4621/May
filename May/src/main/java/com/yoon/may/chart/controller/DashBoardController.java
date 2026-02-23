@@ -33,8 +33,8 @@ public class DashBoardController {
 	public List<DashBoard> selectCategory(DashBoard dashBoard, HttpSession session){
 		Member loginMember = (Member)session.getAttribute("loginMember");
 		String userNo = loginMember.getUserNo();
-		
-		List<DashBoard> selectCategoryCnt = dashBoardService.selectDategoryCnt(dashBoard,userNo);
+		System.out.println(dashBoard);
+		List<DashBoard> selectCategoryCnt = dashBoardService.selectCategoryCnt(dashBoard,userNo);
 		return selectCategoryCnt;
 	}
 

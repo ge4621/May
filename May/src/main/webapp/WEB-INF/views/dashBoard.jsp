@@ -166,7 +166,9 @@ function selectCategorySc(currentMonth){
 			currentMonth : currentMonth
 		},
 		success : function(s){
-			console.log(s)
+			s.forEach(function(item){
+		        console.log(item.categoryNo, item.cnt);
+		    });
 		}
 	})
 }

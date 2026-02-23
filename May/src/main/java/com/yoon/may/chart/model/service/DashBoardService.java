@@ -8,6 +8,6 @@ public interface DashBoardService {
 	
 	int selectMonthSchedule(DashBoard dashBoard,String userNo);
 	
-	List<DashBoard> selectDategoryCnt(DashBoard dashBoard, String userNo);
+	List<DashBoard> selectCategoryCnt(DashBoard dashBoard, String userNo);
 
 }

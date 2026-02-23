@@ -20,8 +20,8 @@ public class DashBoardServiceImpl implements DashBoardService{
 	}
 
 	@Override
-	public List<DashBoard> selectDategoryCnt(DashBoard dashBoard, String userNo) {
-		return dashBoardDao.selectDategoryCnt(dashBoard,userNo);
+	public List<DashBoard> selectCategoryCnt(DashBoard dashBoard, String userNo) {
+		return dashBoardDao.selectCategoryCnt(dashBoard,userNo);
 	}
 	
 }
