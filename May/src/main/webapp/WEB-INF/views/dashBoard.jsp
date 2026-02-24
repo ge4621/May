@@ -80,7 +80,7 @@
 
     <div class="card">
       <h4>가장 많은 카테고리</h4>
-      <p class="big-number">업무</p>
+      <p class="big-number" id="categoryCount">없음</p>
     </div>
 
   </div>
@@ -165,10 +165,17 @@ function selectCategorySc(currentMonth){
 		data : {
 			currentMonth : currentMonth
 		},
-		success : function(s){
-			s.forEach(function(item){
-		        console.log(item.categoryNo, item.cnt);
-		    });
+		success : function(list){
+			if(list.length == 0){
+				$("#categoryCount").text("없음");
+                return;
+			}
+			
+			let names = list.map(function(item){
+				return item.categoryName;
+			});
+			
+			$("#categoryCount").text(names.join(","));
 		}
 	})
 }

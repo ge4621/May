@@ -2,9 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "mybatis-3-mapper.dtd" >
 <mapper namespace="chartMapper">
 
-	<resultMap type="schedule" id="resultCategory">
+	<resultMap type="chart" id="resultCategory">
 		<result column="cnt" property="cnt" />
 		<result column="category_no" property="categoryNo" />
+		<result column="category_name" property="categoryName" />
 	</resultMap>
 	
 	<select id="selectMonthSchedule" resultType="int">
@@ -19,9 +20,9 @@
 	</select>
 	
 	<select id="selectCategoryCnt" resultMap="resultCategory">
-	select cnt,category_no
+	select a.cnt,b.category_no,b.category_name
 	from(
-		select count(*) as cnt , category_no , rank() over(order by count(*) desc) as rnk
+		select count(*) as cnt , category_no ,rank() over(order by count(*) desc) as rnk
 		from schedule
 		where user_no = #{userNo}
 		and start_date &lt;= LAST_DAY(TO_DATE(#{dashBoard.currentMonth},'YYYY-MM'))
@@ -30,7 +31,10 @@
 			or end_date &gt;= TRUNC(TO_DATE(#{dashBoard.currentMonth},'YYYY-MM'),'MM')
 		)
 		group by category_no
-	)
+	)a
+	join category b
+	on a.category_no = b.category_no
+	and b.user_no = #{userNo}
 	where rnk = 1
 	</select>
 </mapper> 

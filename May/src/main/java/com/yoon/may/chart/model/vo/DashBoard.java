@@ -20,4 +20,7 @@ public class DashBoard {
 	private Date endDate;
 	private String currentMonth;
 	
+	private String categoryNo;
+	private int cnt;
+	private String categoryName;
 }
