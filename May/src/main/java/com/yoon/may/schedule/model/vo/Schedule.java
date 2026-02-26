@@ -20,5 +20,7 @@ public class Schedule {
 		private String title;
 		private String content;
 		private Date startDate;
+		private String categoryNo;
 		
+		private String countDay;
 }

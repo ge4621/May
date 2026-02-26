@@ -8,6 +8,17 @@
 		<result column="category_name" property="categoryName" />
 	</resultMap>
 	
+	<resultMap type="category" id="resultCategoryType">
+		<result column="category_no" property="categoryNo" />
+		<result column="category_name" property="categoryName" />
+	</resultMap>
+	
+	<resultMap type="schedule" id="resultDdaySchedule">
+		<result column="schedule_no" property="scheduleNo" />
+		<result column="title" property="title" />
+		<result column="count_Day" property="countDay" />
+	</resultMap>
+	
 	<select id="selectMonthSchedule" resultType="int">
 		select count(*)
 		from schedule
@@ -36,5 +47,36 @@
 	on a.category_no = b.category_no
 	and b.user_no = #{userNo}
 	where rnk = 1
+	</select>
+	
+	<insert id="addCategory">
+		insert into category
+			(
+				category_no,
+				category_name,
+				user_no,
+				create_date
+			)
+			values
+			(
+				category_seq.NEXTVAL,
+				#{dashBoard.categoryName},
+				#{userNo},
+				sysdate
+			)
+	</insert>
+	
+	<select id="selectCategoryType" resultMap="resultCategoryType">
+		select category_no,category_name
+		from category
+		where user_no = #{userNo}
+	</select>
+	
+	<select id="selectDdaySc" resultMap="resultDdaySchedule">
+		select schedule_no, title, trunc(start_date)-trunc(sysdate) as "count_Day"
+		from schedule
+		where start_date between trunc(sysdate)+1 and trunc(sysdate) +3
+		and user_no = #{userNo}
+		order by start_date asc
 	</select>
 </mapper> 

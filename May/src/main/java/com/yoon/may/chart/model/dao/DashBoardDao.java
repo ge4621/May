@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.yoon.may.chart.model.vo.DashBoard;
+import com.yoon.may.schedule.model.vo.Category;
+import com.yoon.may.schedule.model.vo.Schedule;
 
 @Repository
 public class DashBoardDao {
@@ -27,8 +29,21 @@ public class DashBoardDao {
 		Map<String, Object> param = new HashMap<String, Object>();
 		param.put("dashBoard", dashBoard);
 		param.put("userNo", userNo);
-		System.out.println("dao : " + param);
 		return sqlSession.selectList("selectCategoryCnt", param);
 	}
 
+	public int addCategory(DashBoard dashBoard, String userNo) {
+		Map<String, Object> param = new HashMap<String, Object>();
+		param.put("dashBoard", dashBoard);
+		param.put("userNo", userNo);
+		return sqlSession.insert("addCategory", param);
+	}
+	
+	public List<Category> selectCategoryType(String userNo){
+		return sqlSession.selectList("selectCategoryType",userNo);
+	}
+	
+	public List<Schedule> selectDdaySc(String userNo){
+		return sqlSession.selectList("selectDdaySc",userNo);
+	}
 }

@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.yoon.may.chart.model.dao.DashBoardDao;
 import com.yoon.may.chart.model.vo.DashBoard;
+import com.yoon.may.schedule.model.vo.Category;
+import com.yoon.may.schedule.model.vo.Schedule;
 
 @Service
 public class DashBoardServiceImpl implements DashBoardService{
@@ -22,6 +24,21 @@ public class DashBoardServiceImpl implements DashBoardService{
 	@Override
 	public List<DashBoard> selectCategoryCnt(DashBoard dashBoard, String userNo) {
 		return dashBoardDao.selectCategoryCnt(dashBoard,userNo);
+	}
+
+	@Override
+	public int addCategory(DashBoard dashBoard, String userNo) {
+		return dashBoardDao.addCategory(dashBoard,userNo);
+	}
+
+	@Override
+	public List<Category> selectCategoryType(String userNo) {
+		return dashBoardDao.selectCategoryType(userNo);
+	}
+
+	@Override
+	public List<Schedule> selectDdaySc(String userNo) {
+		return dashBoardDao.selectDdaySc(userNo);
 	}
 	
 }

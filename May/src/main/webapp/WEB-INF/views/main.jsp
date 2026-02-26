@@ -299,8 +299,7 @@ body {
     <input type="hidden" id="scheduleDate">
     
     <!-- 카테고리 선택 -->
-    <select id="categoryId" class="modal-select">
-    </select>
+    <select id="categoryId" class="modal-select"></select>
 
     <input type="text" id="scheduleTitle" placeholder="일정 제목">
 
