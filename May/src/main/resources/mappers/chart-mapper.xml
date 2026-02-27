@@ -19,6 +19,11 @@
 		<result column="count_Day" property="countDay" />
 	</resultMap>
 	
+	<resultMap type="schedule" id="resultCategoryMonthSc">
+		<result column="category_name" property="categoryName" />
+		<result column="cnt" property="cnt" />
+	</resultMap>
+	
 	<select id="selectMonthSchedule" resultType="int">
 		select count(*)
 		from schedule
@@ -78,5 +83,20 @@
 		where start_date between trunc(sysdate)+1 and trunc(sysdate) +3
 		and user_no = #{userNo}
 		order by start_date asc
+	</select>
+	
+	<select id ="selectCategoryMonthSc" resultMap="resultCategoryMonthSc">
+		select c.category_name , count(s.schedule_no) as cnt
+		from category c
+		left join schedule s
+			on c.category_no = s.category_no
+			and s.user_no = #{userNo}
+			and s.start_date &lt;= LAST_DAY(TO_DATE(#{schedule.currentMonth},'YYYY-MM'))
+			and (
+				s.end_date is null
+				or s.end_date &gt;= TRUNC(TO_DATE(#{schedule.currentMonth},'YYYY-MM'),'MM')
+			)
+		group by c.category_no, c.category_name
+		order by cnt desc
 	</select>
 </mapper> 

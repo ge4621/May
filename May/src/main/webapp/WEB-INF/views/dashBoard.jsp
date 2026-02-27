@@ -3,6 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <meta charset="UTF-8">
 <title>May Planner</title>
 
@@ -266,6 +267,7 @@ function initDashBoard(){
 	selectCategorySc(currentMonth);
 	selectCategoryType();
 	selectDdaySc(now);
+	selectCategoryMonthSc(currentMonth);
 }
 //이번달 일정개수
 function selectMonthSc(currentMonth){
@@ -347,6 +349,20 @@ function selectDdaySc(now){
 	})
 }
 
+//카테고리별 일정 통계(월별 기준)
+function selectCategoryMonthSc(currentMonth){
+	$.ajax({
+		url : "selectCategoryMonthSc.do",
+		type : "get",
+		data : {
+			currentMonth : currentMonth
+		},
+		success : function(list){
+			drawCategoryCart(list);
+		}
+	})
+}
+
 //카테고리 추가 팝업
 function addCategory(){
     modalMode = "add";
@@ -383,6 +399,7 @@ function saveCategory(){
 				 alert("카테고리 등록되었습니다.");
 				 closeModal();
 				 selectCategoryType();
+				 selectCategoryMonthSc(currentMonth);
 			 }else{
 				 alert("등록 실패");
 			 }
@@ -391,6 +408,53 @@ function saveCategory(){
 			alert("서버 오류 발생");
 		}
 	})
+}
+
+//카테고리 통계 차트 그리기
+let categoryChart;
+function drawCategoryCart(list){
+	const categoryChartMonth =  document.getElementById('categoryChart').getContext('2d');
+	
+	if(categoryChart){
+		categoryChart.destroy();
+	}
+	
+	// 🔥 map + 화살표 함수 사용
+    //const labels = list.map(item => item.categoryName);
+    //const data   = list.map(item => item.count);
+    
+    //for문 버전
+    const labels = [];
+    const data = [];
+
+    // 🔥 전통적인 for문 사용
+    for(let i = 0; i < list.length; i++){
+        labels.push(list[i].categoryName);
+        data.push(list[i].cnt);
+    }
+
+    categoryChart = new Chart(categoryChartMonth,{
+		type : 'bar',
+		data : {
+			labels : labels,
+			datasets : [{
+				label : '일정 수',
+				data : data
+			}]
+		},
+		options : {
+			responsive : true,
+			scales : {
+				y: {
+					beginAtZero : true,
+					suggestedMax: 10,
+					ticks : {
+						stepSize: 1
+					}
+				}
+			}
+		}
+	});
 }
 
 

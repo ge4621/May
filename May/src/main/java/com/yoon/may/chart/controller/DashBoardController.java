@@ -80,5 +80,15 @@ public class DashBoardController {
 		List<Schedule> selectDdaySc = dashBoardService.selectDdaySc(userNo);
 		return selectDdaySc;
 	}
+	
+	@RequestMapping("selectCategoryMonthSc.do")
+	@ResponseBody
+	public List<Schedule> selectCategoryMonthSc(HttpSession session, Schedule schedule){
+		Member loginMember = (Member)session.getAttribute("loginMember");
+		String userNo = loginMember.getUserNo();
+		
+		List<Schedule> selectCategoryMonthSc = dashBoardService.selectCategoryMonthSc(schedule,userNo);
+		return selectCategoryMonthSc;
+	}
 
 }

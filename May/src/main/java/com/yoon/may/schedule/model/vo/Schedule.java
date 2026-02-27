@@ -21,6 +21,9 @@ public class Schedule {
 		private String content;
 		private Date startDate;
 		private String categoryNo;
+		private String categoryName;
 		
 		private String countDay;
+		private String currentMonth;
+		private int cnt;
 }

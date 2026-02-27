@@ -46,4 +46,11 @@ public class DashBoardDao {
 	public List<Schedule> selectDdaySc(String userNo){
 		return sqlSession.selectList("selectDdaySc",userNo);
 	}
+	
+	public List<Schedule> selectCategoryMonthSc(Schedule schedule,String userNo){
+		Map<String, Object> param = new HashMap<String, Object>();
+		param.put("schedule", schedule);
+		param.put("userNo", userNo);
+		return sqlSession.selectList("selectCategoryMonthSc",param);
+	}
 }

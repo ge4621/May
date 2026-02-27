@@ -40,5 +40,10 @@ public class DashBoardServiceImpl implements DashBoardService{
 	public List<Schedule> selectDdaySc(String userNo) {
 		return dashBoardDao.selectDdaySc(userNo);
 	}
+
+	@Override
+	public List<Schedule> selectCategoryMonthSc(Schedule schedule, String userNo) {
+		return dashBoardDao.selectCategoryMonthSc(schedule,userNo);
+	}
 	
 }

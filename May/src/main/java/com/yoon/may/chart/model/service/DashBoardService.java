@@ -17,5 +17,7 @@ public interface DashBoardService {
 	List<Category> selectCategoryType(String userNo);
 	
 	List<Schedule> selectDdaySc(String userNo);
+	
+	List<Schedule> selectCategoryMonthSc(Schedule schedule, String userNo);
 
 }
