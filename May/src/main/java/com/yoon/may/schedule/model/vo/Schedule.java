@@ -26,4 +26,5 @@ public class Schedule {
 		private String countDay;
 		private String currentMonth;
 		private int cnt;
+		private String month;
 }

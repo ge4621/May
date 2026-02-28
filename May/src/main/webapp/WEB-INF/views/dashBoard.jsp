@@ -268,6 +268,7 @@ function initDashBoard(){
 	selectCategoryType();
 	selectDdaySc(now);
 	selectCategoryMonthSc(currentMonth);
+	selectScheduleMonth();
 }
 //이번달 일정개수
 function selectMonthSc(currentMonth){
@@ -363,6 +364,17 @@ function selectCategoryMonthSc(currentMonth){
 	})
 }
 
+//월별 일정 통계
+function selectScheduleMonth(){
+	$.ajax({
+		url : "selectScheduleMonth.do",
+		type : "get",
+		success : function(list){
+			drawMonthCart(list);
+		}
+	})
+}
+
 //카테고리 추가 팝업
 function addCategory(){
     modalMode = "add";
@@ -413,7 +425,7 @@ function saveCategory(){
 //카테고리 통계 차트 그리기
 let categoryChart;
 function drawCategoryCart(list){
-	const categoryChartMonth =  document.getElementById('categoryChart').getContext('2d');
+	const categoryChartMonth =  document.getElementById('categoryChart');
 	
 	if(categoryChart){
 		categoryChart.destroy();
@@ -450,6 +462,57 @@ function drawCategoryCart(list){
 					suggestedMax: 10,
 					ticks : {
 						stepSize: 1
+					}
+				}
+			}
+		}
+	});
+}
+
+//월별 통계 차트 만들기
+let monthScheculeCart;
+function drawMonthCart(list){
+	const monthCart = document.getElementById('monthlyChart');
+	
+	if(monthScheculeCart){
+		monthScheculeCart.destroy();
+	}
+	
+	let data = [];
+	for (let i = 0; i <12 ; i++){
+		data.push(0);
+	}
+	
+	for(let i = 0 ; i< list.length; i++){
+		let monthIndex = parseInt(list[i].month) -1;
+		data[monthIndex] = list[i].cnt;
+	}
+	
+	let labels = [
+		'1월','2월','3월','4월','5월','6월',
+		'7월','8월','9월','10월','11월','12월'
+	];
+	
+	monthScheculeCart = new Chart(monthCart,{
+		type : 'line',
+		data : {
+			labels : labels ,
+			datasets : [{
+				label : '월별 일정 수',
+				data : data,
+				borderWidth : 2,
+				fill : false,
+				tension : 0.3
+			}]
+		},
+		options : {
+			responsive : true,
+			scales : {
+				y : {
+					beginAtZero : true,
+					suggestedMax : 10,
+					ticks : {
+						stepSize : 1
 					}
 				}
 			}

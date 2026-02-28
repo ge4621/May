@@ -22,6 +22,7 @@ public class DashBoardDao {
 		Map<String, Object> param = new HashMap<String, Object>();
 		param.put("dashBoard", dashBoard);
 		param.put("userNo", userNo);
+		System.out.println(dashBoard);
 		return sqlSession.selectOne("selectMonthSchedule",param);
 	}
 	
@@ -52,5 +53,12 @@ public class DashBoardDao {
 		param.put("schedule", schedule);
 		param.put("userNo", userNo);
 		return sqlSession.selectList("selectCategoryMonthSc",param);
+	}
+	
+	public List<Schedule> selectScheduleMonth(Schedule schedule,String userNo){
+		Map<String, Object> param = new HashMap<String, Object>();
+		param.put("schedule", schedule);
+		param.put("userNo", userNo);
+		return sqlSession.selectList("selectScheduleMonth",param);
 	}
 }

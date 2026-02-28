@@ -24,14 +24,19 @@
 		<result column="cnt" property="cnt" />
 	</resultMap>
 	
+	<resultMap type="schedule" id="resultMonthSc">
+		<result column="month" property="month" />
+		<result column="cnt" property="cnt" />
+	</resultMap>
+	
 	<select id="selectMonthSchedule" resultType="int">
 		select count(*)
 		from schedule
 		where user_no = #{userNo}
 		and start_date &lt;= LAST_DAY(TO_DATE(#{dashBoard.currentMonth},'YYYY-MM'))
 		and (
-			end_date is null
-			or end_date &gt;= TRUNC(TO_DATE(#{dashBoard.currentMonth},'YYYY-MM'),'MM')
+		<!--  -->	end_date is null or
+			 end_date &gt;= TRUNC(TO_DATE(#{dashBoard.currentMonth},'YYYY-MM'),'MM')
 		)
 	</select>
 	
@@ -98,5 +103,15 @@
 			)
 		group by c.category_no, c.category_name
 		order by cnt desc
+	</select>
+	
+	<select id="selectScheduleMonth" resultMap="resultMonthSc">
+		select TO_CHAR(start_date,'MM') as month, count(*) as cnt
+		from schedule
+		where user_no =#{userNo}
+		and start_date &gt;= TRUNC(sysdate,'YYYY')
+		and start_date &lt; ADD_MONTHS(TRUNC(sysdate,'YYYY'),12)
+		group by TO_CHAR(start_date,'MM')
+		order by month
 	</select>
 </mapper> 
