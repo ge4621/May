@@ -342,7 +342,7 @@ function selectDdaySc(now){
 				html = "<li>다가오는 일정이 없습니다.</li>";
 			}else{
 				for(let s of list){
-					html += "<li> D-"+ s.countDay + s.title +"</li>";
+					html += "<li> D- "+ s.countDay + s.title +"</li>";
 				}
 			}
 			$("#D_daySchedule").html(html);

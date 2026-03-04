@@ -1,5 +1,6 @@
 package com.yoon.may.schedule.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,14 +53,35 @@ public class ScheduleController {
 		return scheduleList;
 	}
 	
+//	@RequestMapping("DetailSchedule.do")
+//	@ResponseBody
+//	public Schedule detailSchedule(Schedule schedule, HttpSession session){
+//		Member loginMember = (Member)session.getAttribute("loginMember");
+//		String userNo = loginMember.getUserNo();
+//		
+//		Schedule scheduleDetail = scheduleService.detailSchedule(schedule,userNo);
+//		return scheduleDetail;
+//	}
+	
 	@RequestMapping("DetailSchedule.do")
 	@ResponseBody
-	public Schedule detailSchedule(Schedule schedule, HttpSession session){
+	public Map<String, Object> detailSchedule(Schedule schedule, HttpSession session){
 		Member loginMember = (Member)session.getAttribute("loginMember");
 		String userNo = loginMember.getUserNo();
 		
 		Schedule scheduleDetail = scheduleService.detailSchedule(schedule,userNo);
-		return scheduleDetail;
+		Map<String, Object> result = new HashMap<String, Object>();
+	    result.put("scheduleNo", scheduleDetail.getScheduleNo());
+	    result.put("title", scheduleDetail.getTitle());
+	    result.put("content", scheduleDetail.getContent());
+	    result.put("categoryNo", scheduleDetail.getCategoryNo());
+
+	    // 🔥 Date → yyyy-MM-dd 문자열
+	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	    result.put("startDate", sdf.format(scheduleDetail.getStartDate()));
+	    result.put("endDate", sdf.format(scheduleDetail.getEndDate()));
+
+	    return result;
 	}
 	
 	@RequestMapping("updateSchedule.do")

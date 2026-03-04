@@ -35,7 +35,7 @@
 		where user_no = #{userNo}
 		and start_date &lt;= LAST_DAY(TO_DATE(#{dashBoard.currentMonth},'YYYY-MM'))
 		and (
-		<!--  -->	end_date is null or
+			 end_date is null or
 			 end_date &gt;= TRUNC(TO_DATE(#{dashBoard.currentMonth},'YYYY-MM'),'MM')
 		)
 	</select>

@@ -15,6 +15,7 @@
 		<result column="title" property="title" />
 		<result column="content" property="content" />
 		<result column="start_date" property="startDate" />
+		<result column="end_date" property="endDate" />
 		<result column="category_no" property="categoryNo" />
 	</resultMap>
 	
@@ -27,6 +28,7 @@
 				content,
 				category_no,
 				start_date,
+				end_date,
 				create_date
 			)
 			values
@@ -37,6 +39,7 @@
 				,#{schedule.content}
 				,#{schedule.categoryNo}
 				,#{schedule.startDate}
+				,#{schedule.endDate}
 				,sysdate
 			)
 	</insert>
@@ -45,7 +48,7 @@
 		select *
 	    from schedule
 	    where user_no = #{userNo}
-	    and start_date = TO_DATE(#{startDate}, 'YY/MM/DD') 
+	    and start_date = TO_DATE(#{startDate}, 'YY/MM/DD')
 	</select>
 	
 	<select id="detailSchedule" resultMap="detailSchedule">
@@ -61,6 +64,8 @@
 		, content = #{schedule.content}
 		, update_date = sysdate
 		, category_no = #{schedule.categoryNo}
+		, start_date = #{schedule.startDate}
+		, end_date = #{schedule.endDate}
 		where user_no = #{userNo}
 		and schedule_no = #{schedule.scheduleNo}
 	</update>

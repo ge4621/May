@@ -20,6 +20,7 @@ public class Schedule {
 		private String title;
 		private String content;
 		private Date startDate;
+		private Date endDate;
 		private String categoryNo;
 		private String categoryName;
 		

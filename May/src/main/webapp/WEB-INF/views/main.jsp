@@ -238,6 +238,42 @@ body {
   outline: none;
 }
 
+/* ===== 기간 영역 ===== */
+.date-range {
+  margin-bottom: 15px;
+}
+
+.date-label {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+.date-inputs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.date-inputs input[type="date"] {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.date-inputs input[type="date"]:focus {
+  border-color: #03a9f4;
+  outline: none;
+}
+
+.date-separator {
+  font-size: 14px;
+  color: #666;
+}
+
 </style>
 </head>
 
@@ -302,6 +338,16 @@ body {
     <select id="categoryId" class="modal-select"></select>
 
     <input type="text" id="scheduleTitle" placeholder="일정 제목">
+   
+	 <!-- 기간 -->
+	<div class="date-range">
+	  <label class="date-label">기간 :</label>
+	  <div class="date-inputs">
+	    <input type="date" id="startDate">
+	    <span class="date-separator">~</span>
+	    <input type="date" id="endDate">
+	  </div>
+	</div>
 
     <textarea id="scheduleMemo" placeholder="메모"></textarea>
 
@@ -309,7 +355,7 @@ body {
       <button id="saveBtn" onclick="saveSchedule()">저장</button>
       <button id="updateBtn" onclick="updateSchedule()" style="display:none;">수정</button>
   	  <button id="deleteBtn" onclick="deleteSchedule()" style="display:none;">삭제</button>
-     <!-- <button onclick="closeModal()">취소</button>  -->
+      <button id="closeBtn" onclick="closeModal()">취소</button>
     </div>
 
   </div>
@@ -403,6 +449,29 @@ function selectDate(day) {
     loadSchedule(selectedDate);
 }
 
+function setTodayDate(){
+	const yyyy = today.getFullYear();
+    const mm = String(today.getMonth()+1).padStart(2,"0");
+    const dd = String(today.getDate()).padStart(2,"0");
+    const todayStr = yyyy + "-" + mm + "-" + dd;
+
+    selectedDateGlobal = todayStr;
+
+    document.getElementById("selectedDate").innerText = "오늘 일정";
+}
+
+function setStartDateEndDate(){
+    $("#startDate").on("change",function(){
+    	const startValue = $(this).val();
+    	const endInput = $("#endDate");
+    	
+    	if(!endInput.val() || endInput.val() < startValue){
+    		endInput.val(startValue);
+    	}
+    	endInput.attr("min",startValue);
+    })
+}
+
 function selectCategory(){
 	
 	$.ajax({
@@ -419,6 +488,49 @@ function selectCategory(){
 	});
 }
 
+//모달 추기화
+function initModal(mode = "add"){
+	if(mode =="add"){
+		// 공통 초기화
+	    $("#scheduleTitle").val("").prop("readonly", false);
+	    $("#scheduleMemo").val("").prop("readonly", false);
+	    $("#categoryId").val("").prop("disabled", false);
+	    $("#startDate").val("").prop("disabled", false);
+	    $("#endDate").val("").prop("disabled", false);
+	}else{
+		$("#scheduleTitle").prop("readonly", false);
+	    $("#scheduleMemo").prop("readonly", false);
+	    $("#categoryId").prop("disabled", false);
+	    $("#startDate").prop("disabled", false);
+	    $("#endDate").prop("disabled", false);
+	}
+
+    $("#saveBtn").hide();
+    $("#updateBtn").hide().text("수정");
+    $("#deleteBtn").hide();
+    $("#closeBtn").hide();
+
+    switch(mode) {
+        case "add":
+            $("#saveBtn").show();
+            $("#closeBtn").show();
+            break;
+        case "detail":
+            $("#updateBtn").show().text("수정");
+            $("#deleteBtn").show();
+            $("#scheduleTitle").prop("readonly", true);
+            $("#scheduleMemo").prop("readonly", true);
+            $("#categoryId").prop("disabled", true);
+            $("#startDate").prop("disabled", true);
+            $("#endDate").prop("disabled", true);
+            break;
+        case "edit":
+            $("#updateBtn").show().text("저장");
+            $("#deleteBtn").show();
+            break;
+    }
+}
+
 //일정 추가 팝업
 function addSchedule(){
 
@@ -429,42 +541,95 @@ function addSchedule(){
 
     modalMode = "add";
     currentScheduleNo = null;
+    initModal("add");
     
     $("#scheduleDate").val(selectedDateGlobal);
-
-    $("#scheduleTitle").prop("readonly", false);
-    $("#scheduleMemo").prop("readonly", false);
-
-    $("#saveBtn").show();
-    $("#updateBtn").hide();
-    $("#deleteBtn").hide();
-
-    $("#scheduleTitle").val("");
-    $("#scheduleMemo").val("");
-
+    $("#startDate").val(selectedDateGlobal);
+    $("#endDate").val(selectedDateGlobal).attr("min", selectedDateGlobal);
     $("#scheduleModal").css("display","flex");
 }
-//팝업창 닫기
-function closeModal() {
-	  document.getElementById("scheduleModal").style.display = "none";
+
+function openDetail(scheduleNo) {
+    modalMode = "detail";
+    currentScheduleNo = scheduleNo;
+    initModal("detail");
+
+    $.ajax({
+        url: "DetailSchedule.do",
+        type: "get",
+        data: { scheduleNo: scheduleNo },
+        success: function(s){
+            $("#scheduleTitle").val(s.title);
+            $("#scheduleMemo").val(s.content);
+            $("#categoryId").val(s.categoryNo);
+            $("#startDate").val(s.startDate);
+            $("#endDate").val(s.endDate);
+            
+            $("#scheduleModal").css("display","flex");
+        }
+    });
 }
 
-//일정 저장
+function updateSchedule(){
+
+    if(modalMode == "detail"){
+        modalMode = "edit";
+        initModal("edit");
+        return;
+    }
+
+    if(modalMode == "edit"){
+
+        $.ajax({
+            url: "updateSchedule.do",
+            type: "post",
+            data:{
+                scheduleNo: currentScheduleNo,
+                title: $("#scheduleTitle").val(),
+                content: $("#scheduleMemo").val(),
+                categoryNo : $("#categoryId").val(),
+                startDate : $("#startDate").val(),
+                endDate : $("#endDate").val()
+            },
+            success:function(result){
+                alert("수정 완료");
+                modalMode = "add";
+                closeModal();
+                loadSchedule(selectedDateGlobal);
+            }
+        });
+    }
+}
+
+function deleteSchedule(){
+
+    if(!confirm("삭제하시겠습니까?")) return;
+
+    $.ajax({
+        url: "deleteSchedule.do",
+        type: "post",
+        data:{ scheduleNo: currentScheduleNo },
+        success:function(result){
+            alert("삭제 완료");
+            closeModal();
+            loadSchedule(selectedDateGlobal);
+        }
+    });
+}
+
 function saveSchedule(){
 	
 	 const date = $("#scheduleDate").val();
-	 const title = $("#scheduleTitle").val();
-	 const memo = $("#scheduleMemo").val();
-	 const categoryNo = $("#categoryId").val();
 	 
 	 $.ajax({
 		 url : "saveSchedule.do",
 		 type : "post",
 		 data : {
-			  startDate: date,
-		      title: title,
-		      content: memo,
-		      categoryNo: categoryNo
+			  startDate: $("#startDate").val(),
+			  endDate : $("#endDate").val(),
+		      title: $("#scheduleTitle").val(),
+		      content: $("#scheduleMemo").val(),
+		      categoryNo: $("#categoryId").val()
 		 },
 		 success:function(result){
 			 if(result.success){
@@ -504,102 +669,22 @@ function loadSchedule(date){
 		}
 	});
 }
-renderCalendar();
 
-function openDetail(scheduleNo) {
-    modalMode = "detail";
-    currentScheduleNo = scheduleNo;
-    $.ajax({
-        url: "DetailSchedule.do",
-        type: "get",
-        data: { scheduleNo: scheduleNo },
-        success: function(s){
-            $("#scheduleTitle").val(s.title);
-            $("#scheduleMemo").val(s.content);
-            $("#categoryId").val(s.categoryNo);
-
-            $("#scheduleTitle").prop("readonly", true);
-            $("#scheduleMemo").prop("readonly", true);
-            $("#categoryId").prop("disabled", true);
-
-            $("#saveBtn").hide();
-            $("#updateBtn").show();
-            $("#deleteBtn").show();
-
-            $("#scheduleModal").css("display","flex");
-        }
-    });
+//팝업창 닫기
+function closeModal() {
+	$("#scheduleModal").css("display","none");
+	$("#endDate").attr("min", "");
+	modalMode = "add";       // 기본 모드로 초기화
 }
-
-function updateSchedule(){
-
-    if(modalMode == "detail"){
-        // 수정 가능 상태로 변경
-        modalMode = "edit";
-
-        $("#scheduleTitle").prop("readonly", false);
-        $("#scheduleMemo").prop("readonly", false);
-        $("#categoryId").prop("disabled", false);
-
-        $("#updateBtn").text("저장");
-        return;
-    }
-
-    if(modalMode == "edit"){
-
-        $.ajax({
-            url: "updateSchedule.do",
-            type: "post",
-            data:{
-                scheduleNo: currentScheduleNo,
-                title: $("#scheduleTitle").val(),
-                content: $("#scheduleMemo").val(),
-                categoryNo : $("#categoryId").val()
-            },
-            success:function(result){
-                alert("수정 완료");
-                $("#updateBtn").text("수정");
-                modalMode = "add";
-                closeModal();
-                loadSchedule(selectedDateGlobal);
-            }
-        });
-    }
-}
-
-function deleteSchedule(){
-
-    if(!confirm("삭제하시겠습니까?")) return;
-
-    $.ajax({
-        url: "deleteSchedule.do",
-        type: "post",
-        data:{ scheduleNo: currentScheduleNo },
-        success:function(result){
-            alert("삭제 완료");
-            closeModal();
-            loadSchedule(selectedDateGlobal);
-        }
-    });
-}
-
 
 //페이지 로드 시 오늘 날짜 자동 조회
 $(document).ready(function(){
 	
-	selectCategory(); //카테고리 조회
-
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth()+1).padStart(2,"0");
-    const dd = String(today.getDate()).padStart(2,"0");
-
-    const todayStr = yyyy + "-" + mm + "-" + dd;
-
-    selectedDateGlobal = todayStr;
-
-    document.getElementById("selectedDate").innerText = "오늘 일정";
-
-    loadSchedule(todayStr);
+	renderCalendar();
+	selectCategory();
+	setTodayDate();    
+    loadSchedule(selectedDateGlobal);
+    setStartDateEndDate();
     
 });
 </script>
