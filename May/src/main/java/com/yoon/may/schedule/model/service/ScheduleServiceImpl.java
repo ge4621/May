@@ -39,4 +39,9 @@ public class ScheduleServiceImpl implements ScheduleService{
 		return scheduleDao.deleteSchedule(schedule,userNo);
 	}
 
+	@Override
+	public List<Schedule> loadMonthSchedule(Schedule schedule, String userNo) {
+		return scheduleDao.loadMonthSchedule(schedule,userNo);
+	}
+
 }

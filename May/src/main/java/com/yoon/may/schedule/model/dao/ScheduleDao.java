@@ -51,4 +51,11 @@ public class ScheduleDao {
 		return sqlSession.delete("deleteSchedule", param);
 	}
 	
+	public List<Schedule> loadMonthSchedule(Schedule schedule, String userNo){
+		Map<String, Object> param = new HashMap<String, Object>();
+		param.put("schedule",schedule);
+		param.put("userNo",userNo);
+		return sqlSession.selectList("loadMonthSchedule",param);
+	}
+	
 }

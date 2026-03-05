@@ -17,4 +17,6 @@ public interface ScheduleService {
 	
 	int deleteSchedule(Schedule schedule,String userNo);
 	
+	List<Schedule> loadMonthSchedule(Schedule schedule, String userNo);
+	
 }

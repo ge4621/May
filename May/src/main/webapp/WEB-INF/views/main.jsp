@@ -54,6 +54,15 @@ body {
   height: 120px;
   border: 1px solid #ddd;
 }
+
+.dot {
+  width: 6px;
+  height: 6px;
+  background: #ff4d4f;
+  border-radius: 50%;
+  margin-top: 4px;
+}
+
 /* 요일 */
 .calendar th {
   background: #f0f0f0;
@@ -67,6 +76,7 @@ body {
   vertical-align: top;  
   padding: 8px;
   cursor: pointer;
+  position: relative;
 }
 
 .calendar td:hover {
@@ -370,6 +380,8 @@ let selectedDateGlobal = "";
 let modalMode = "add";
 let currentScheduleNo = null;
 
+let scheduleDates = {};
+
 function renderCalendar() {
   const firstDay = new Date(currentYear, currentMonth, 1).getDay();
   const lastDate = new Date(currentYear, currentMonth + 1, 0).getDate();
@@ -387,7 +399,23 @@ function renderCalendar() {
 
   for (let day = 1; day <= lastDate; day++) {
     let cell = document.createElement("td");
-    cell.innerText = day;
+    //cell.innerText = day;
+    // yyyy-mm-dd 형식 맞추기
+    let dateStr = currentYear + "-" +
+                  String(currentMonth + 1).padStart(2, '0') + "-" +
+                  String(day).padStart(2, '0');
+
+    // 날짜 div
+    let dateDiv = document.createElement("div");
+    dateDiv.innerText = day;
+    cell.appendChild(dateDiv);
+
+    //일정 있는 날이면 dot 추가
+    if (scheduleDates && scheduleDates[dateStr]) {
+      let dot = document.createElement("div");
+      dot.classList.add("dot");
+      cell.appendChild(dot);
+    }
 
     if (
       day === today.getDate() &&
@@ -415,7 +443,8 @@ function prevMonth() {
     currentMonth = 11;
     currentYear--;
   }
-  renderCalendar();
+  //renderCalendar();
+  loadMonthSchedule();
 }
 
 //▶클릭시 실행 함수
@@ -425,7 +454,45 @@ function nextMonth() {
     currentMonth = 0;
     currentYear++;
   }
-  renderCalendar();
+  //renderCalendar();
+  loadMonthSchedule();
+}
+
+function loadMonthSchedule(){
+	const month = currentMonth + 1;
+	
+	$.ajax({
+		url : "loadMonthSchedule.do",
+		type : "get",
+		data : {
+			currentYear : currentYear,
+			month : month
+		},
+		success : function(result){
+			scheduleDates = {};
+			
+			for(var i = 0; i <result.length; i++){
+				var start = new Date(result[i].startDate);
+				var end;
+				
+				if(result[i].endDate){
+					end = new Date(result[i].endDate);
+				}else{
+					end = start;
+				}
+				var current = new Date(start);
+				
+				while(current <= end){
+					var dateStr = current.getFullYear() + "-" + String(current.getMonth()+1).padStart(2,'0') + "-" + 
+						String(current.getDate()).padStart(2,'0')
+					
+					scheduleDates[dateStr] = true;
+					current.setDate(current.getDate()+1);
+				}
+			}
+			renderCalendar();
+		}
+	})
 }
 
 //일정 리스트 조회 부분 함수
@@ -613,6 +680,7 @@ function deleteSchedule(){
             alert("삭제 완료");
             closeModal();
             loadSchedule(selectedDateGlobal);
+            loadMonthSchedule();
         }
     });
 }
@@ -636,6 +704,7 @@ function saveSchedule(){
 				 alert("일정이 등록되었습니다.");
 				 closeModal();
 				 loadSchedule(date);
+				 loadMonthSchedule();
 			 }else{
 				 alert("등록 실패");
 			 }
@@ -654,6 +723,7 @@ function loadSchedule(date){
 			startDate : date
 		},
 		success : function(list){
+			console.log(list)
 			let html = "";
 			if(!list || list.length == 0){
 				html = "<li>일정이 없습니다.</li>";
@@ -680,7 +750,8 @@ function closeModal() {
 //페이지 로드 시 오늘 날짜 자동 조회
 $(document).ready(function(){
 	
-	renderCalendar();
+	//renderCalendar();
+	loadMonthSchedule();
 	selectCategory();
 	setTodayDate();    
     loadSchedule(selectedDateGlobal);

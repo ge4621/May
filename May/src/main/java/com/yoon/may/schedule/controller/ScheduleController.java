@@ -1,6 +1,7 @@
 package com.yoon.may.schedule.controller;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,20 +49,12 @@ public class ScheduleController {
 	public List<Schedule> selectSchedule(Schedule schedule,HttpSession session) {
 		Member loginMember = (Member)session.getAttribute("loginMember");
 		String userNo = loginMember.getUserNo();
+		System.out.println(schedule);
 		
 		List<Schedule> scheduleList = scheduleService.selectSchedule(schedule,userNo);
+		System.out.println(scheduleList);
 		return scheduleList;
 	}
-	
-//	@RequestMapping("DetailSchedule.do")
-//	@ResponseBody
-//	public Schedule detailSchedule(Schedule schedule, HttpSession session){
-//		Member loginMember = (Member)session.getAttribute("loginMember");
-//		String userNo = loginMember.getUserNo();
-//		
-//		Schedule scheduleDetail = scheduleService.detailSchedule(schedule,userNo);
-//		return scheduleDetail;
-//	}
 	
 	@RequestMapping("DetailSchedule.do")
 	@ResponseBody
@@ -76,7 +69,6 @@ public class ScheduleController {
 	    result.put("content", scheduleDetail.getContent());
 	    result.put("categoryNo", scheduleDetail.getCategoryNo());
 
-	    // 🔥 Date → yyyy-MM-dd 문자열
 	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	    result.put("startDate", sdf.format(scheduleDetail.getStartDate()));
 	    result.put("endDate", sdf.format(scheduleDetail.getEndDate()));
@@ -123,5 +115,39 @@ public class ScheduleController {
 	public String dashBoard() {
 		return "dashBoard";
 	}
+	
+	@RequestMapping("loadMonthSchedule.do")
+	@ResponseBody
+	public List<Map<String,Object>> loadMonthSchedule(Schedule schedule, HttpSession session) {
+		Member loginMember = (Member)session.getAttribute("loginMember");
+		String userNo = loginMember.getUserNo();
+		
+		List<Schedule> scheduleCnt = scheduleService.loadMonthSchedule(schedule,userNo);
+
+		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		
+		for(Schedule s : scheduleCnt) {
+			Map<String, Object> scheduleMap = new HashMap<String, Object>();
+			
+			scheduleMap.put("scheduleNo", s.getScheduleNo());
+	        scheduleMap.put("title", s.getTitle());
+	        scheduleMap.put("content", s.getContent());
+	        scheduleMap.put("categoryNo", s.getCategoryNo());
+
+	        scheduleMap.put("startDate", sdf.format(s.getStartDate()));
+
+	        if(s.getEndDate() != null){
+	            scheduleMap.put("endDate", sdf.format(s.getEndDate()));
+	        }else{
+	            scheduleMap.put("endDate", null);
+	        }
+
+	        result.add(scheduleMap);
+			
+		}
+		return result;
+	}
+	
 	
 }

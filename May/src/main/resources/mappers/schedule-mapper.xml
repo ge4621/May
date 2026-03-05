@@ -7,6 +7,7 @@
 		<result column="title" property="title" />
 		<result column="content" property="content" />
 		<result column="start_date" property="startDate" />
+		<result column="start_date" property="endDate" />
 	</resultMap>
 	
 	<resultMap type="schedule" id="detailSchedule">
@@ -76,4 +77,15 @@
 		where user_no = #{userNo}
 		and schedule_no = #{schedule.scheduleNo}
 	</delete>
+	
+	<select id ="loadMonthSchedule" resultMap="detailSchedule">
+		select *
+		from schedule
+		where user_no = #{userNo}
+		and start_date &lt;= LAST_DAY(TO_DATE(#{schedule.currentYear} || '-' || LPAD(#{schedule.month},2,'0'),'YYYY-MM'))
+		and (
+			end_date is null
+			or end_date &gt;= TRUNC(TO_DATE(#{schedule.currentYear} || '-' || LPAD(#{schedule.month},2,'0'),'YYYY-MM'),'MM')
+		)
+	</select>
 </mapper>
