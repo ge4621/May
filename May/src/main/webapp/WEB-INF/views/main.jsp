@@ -716,6 +716,7 @@ function saveSchedule(){
 }
 
 function loadSchedule(date){
+	console.log(date)
 	$.ajax({
 		url : "selectSchedule.do",
 		type : "get",

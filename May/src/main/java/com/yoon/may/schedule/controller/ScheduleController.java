@@ -49,10 +49,8 @@ public class ScheduleController {
 	public List<Schedule> selectSchedule(Schedule schedule,HttpSession session) {
 		Member loginMember = (Member)session.getAttribute("loginMember");
 		String userNo = loginMember.getUserNo();
-		System.out.println(schedule);
 		
 		List<Schedule> scheduleList = scheduleService.selectSchedule(schedule,userNo);
-		System.out.println(scheduleList);
 		return scheduleList;
 	}
 	
