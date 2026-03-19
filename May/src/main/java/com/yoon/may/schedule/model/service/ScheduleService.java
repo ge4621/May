@@ -19,4 +19,6 @@ public interface ScheduleService {
 	
 	List<Schedule> loadMonthSchedule(Schedule schedule, String userNo);
 	
+	int completeSchedule(Schedule schedule,String userNo);
+	
 }

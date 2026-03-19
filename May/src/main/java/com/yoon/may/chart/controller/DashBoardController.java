@@ -33,6 +33,34 @@ public class DashBoardController {
 		return MonthCnt;
 	}
 	
+	@RequestMapping("selectFinshSc.do")
+	@ResponseBody
+	public int selectFinshSc(DashBoard dashBoard, HttpSession session) {
+		Member loginMember = (Member)session.getAttribute("loginMember");
+		String userNo = loginMember.getUserNo();
+		
+		int selectFinshSc = dashBoardService.selectFinshSc(dashBoard,userNo);
+		return selectFinshSc;
+	}
+	
+	@RequestMapping("selectFinshRate.do")
+	@ResponseBody
+	public int selectFinshRate(DashBoard dashBoard, HttpSession session) {
+		Member loginMember = (Member)session.getAttribute("loginMember");
+		String userNo = loginMember.getUserNo();
+		
+		int monthAllSchedule = dashBoardService.selectMonthSchedule(dashBoard,userNo);
+		int finshSchedule = dashBoardService.selectFinshSc(dashBoard,userNo);
+		
+		int rate = 0;
+		if(monthAllSchedule > 0) {
+			rate = (int)((double)finshSchedule / monthAllSchedule * 100);
+		}else {
+			rate = 0;
+		}
+		return rate;
+	}
+	
 	@RequestMapping("selectCategorySc.do")
 	@ResponseBody
 	public List<DashBoard> selectCategory(DashBoard dashBoard, HttpSession session){
@@ -100,5 +128,54 @@ public class DashBoardController {
 		List<Schedule> selectScheduleMonth = dashBoardService.selectScheduleMonth(schedule,userNo);
 		return selectScheduleMonth;
 	}
+	
+	@RequestMapping("deleteCategory.do")
+	@ResponseBody
+	public Map<String, Object> deleteCategory(HttpSession session,Category category) {
+		Map<String, Object> result = new HashMap<String, Object>();
+		
+		Member loginMember = (Member)session.getAttribute("loginMember");
+		String userNo = loginMember.getUserNo();
+		
+		int deleteCategory = dashBoardService.deleteCategory(category,userNo);
+		
+		if(deleteCategory > 0) {
+			result.put("success", true);
+		}else {
+			result.put("success", false);
+		}
+		return result;
+	}
+	
+	@RequestMapping("selectCategoryDetail.do")
+	@ResponseBody
+	public Map<String, Object> selectCategoryDetail(HttpSession session, Category category){
+		Member loginMember = (Member)session.getAttribute("loginMember");
+		String userNo = loginMember.getUserNo();
+		
+		Category categoryDetail = dashBoardService.selectCategoryDetail(category,userNo);
+		Map<String, Object> result = new HashMap<String, Object>();
+	    result.put("categoryNo", categoryDetail.getCategoryNo());
+	    result.put("categoryName", categoryDetail.getCategoryName());
+	    
+	    return result;
+	}
 
+	@RequestMapping("updateCategory.do")
+	@ResponseBody
+	public Map<String, Object> updateCategory(HttpSession session, Category category){
+		Map<String, Object> result = new HashMap<String, Object>();
+		
+		Member loginMember = (Member)session.getAttribute("loginMember");
+		String userNo = loginMember.getUserNo();
+		
+		int updateCategory = dashBoardService.updateCategory(category,userNo);
+		
+		if(updateCategory > 0) {
+			result.put("success", true);
+		}else {
+			result.put("success", false);
+		}
+		return result;
+	}
 }

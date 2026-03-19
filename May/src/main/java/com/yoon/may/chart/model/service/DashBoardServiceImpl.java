@@ -22,6 +22,11 @@ public class DashBoardServiceImpl implements DashBoardService{
 	}
 
 	@Override
+	public int selectFinshSc(DashBoard dashBoard, String userNo) {
+		return dashBoardDao.selectFinshSc(dashBoard,userNo);
+	}
+	
+	@Override
 	public List<DashBoard> selectCategoryCnt(DashBoard dashBoard, String userNo) {
 		return dashBoardDao.selectCategoryCnt(dashBoard,userNo);
 	}
@@ -50,5 +55,21 @@ public class DashBoardServiceImpl implements DashBoardService{
 	public List<Schedule> selectScheduleMonth(Schedule schedule, String userNo) {
 		return dashBoardDao.selectScheduleMonth(schedule,userNo);
 	}
+
+	@Override
+	public int deleteCategory(Category category, String userNo) {
+		return dashBoardDao.deleteCategory(category,userNo);
+	}
+
+	@Override
+	public Category selectCategoryDetail(Category category, String userNo) {
+		return dashBoardDao.selectCategoryDetail(category,userNo);
+	}
+
+	@Override
+	public int updateCategory(Category category, String userNo) {
+		return dashBoardDao.updateCategory(category,userNo);
+	}
+
 	
 }

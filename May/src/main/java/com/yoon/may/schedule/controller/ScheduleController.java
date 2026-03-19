@@ -147,5 +147,21 @@ public class ScheduleController {
 		return result;
 	}
 	
-	
+	@RequestMapping("completeSchedule.do")
+	@ResponseBody
+	public Map<String, Object> completeSchedule(Schedule schedule, HttpSession session){
+		Map<String, Object> result = new HashMap<String, Object>();
+		
+		Member loginMember = (Member)session.getAttribute("loginMember");
+		String userNo = loginMember.getUserNo();
+		
+		int completeSchedule = scheduleService.completeSchedule(schedule,userNo);
+		
+		if(completeSchedule > 0) {
+			result.put("success", true);
+		}else {
+			result.put("success", false);
+		}
+		return result;
+	}
 }

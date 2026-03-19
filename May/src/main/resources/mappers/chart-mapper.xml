@@ -29,6 +29,11 @@
 		<result column="cnt" property="cnt" />
 	</resultMap>
 	
+	<resultMap type="category" id="selectCategoryDetail">
+		<result column="category_no" property="categoryNo" />
+		<result column="category_name" property="categoryName" />
+	</resultMap>
+	
 	<select id="selectMonthSchedule" resultType="int">
 		select count(*)
 		from schedule
@@ -39,6 +44,19 @@
 			 end_date &gt;= TRUNC(TO_DATE(#{dashBoard.currentMonth},'YYYY-MM'),'MM')
 		)
 	</select>
+	
+	<select id="selectFinshSc" resultType="int">
+		select count(*)
+		from schedule
+		where user_no = #{userNo}
+		and start_date &lt;= LAST_DAY(TO_DATE(#{dashBoard.currentMonth},'YYYY-MM'))
+		and (
+			 end_date is null or
+			 end_date &gt;= TRUNC(TO_DATE(#{dashBoard.currentMonth},'YYYY-MM'),'MM')
+		)
+		and status = 'DONE'
+	</select>
+	
 	
 	<select id="selectCategoryCnt" resultMap="resultCategory">
 	select a.cnt,b.category_no,b.category_name
@@ -114,4 +132,25 @@
 		group by TO_CHAR(start_date,'MM')
 		order by month
 	</select>
+	
+	<delete id="deleteCategory">
+		delete 
+		from category
+		where user_no = #{userNo}
+		and category_no = #{category.categoryNo}
+	</delete>
+	
+	<select id ="selectCategoryDetail" resultMap="selectCategoryDetail">
+		select *
+		from category
+		where user_no = #{userNo}
+		and category_no = #{category.categoryNo}
+	</select>
+	
+	<update id="updateCategory">
+		update category
+		set category_name = #{category.categoryName}
+		where user_no = #{userNo}
+		and category_no = #{category.categoryNo}
+	</update>
 </mapper> 

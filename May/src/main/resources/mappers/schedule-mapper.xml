@@ -89,4 +89,11 @@
 			or end_date &gt;= TRUNC(TO_DATE(#{schedule.currentYear} || '-' || LPAD(#{schedule.month},2,'0'),'YYYY-MM'),'MM')
 		)
 	</select>
+	<!-- TODO(진행) / done (완료) -->
+	<update id ="completeSchedule">
+		update schedule
+		set status = 'DONE'
+		where user_no = #{userNo}
+		and schedule_no = #{schedule.scheduleNo}
+	</update>
 </mapper>

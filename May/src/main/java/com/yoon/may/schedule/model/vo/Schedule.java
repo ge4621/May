@@ -29,4 +29,5 @@ public class Schedule {
 		private String currentYear;
 		private int cnt;
 		private String month;
+		private String status;
 }

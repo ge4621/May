@@ -44,4 +44,9 @@ public class ScheduleServiceImpl implements ScheduleService{
 		return scheduleDao.loadMonthSchedule(schedule,userNo);
 	}
 
+	@Override
+	public int completeSchedule(Schedule schedule, String userNo) {
+		return scheduleDao.completeSchedule(schedule,userNo);
+	}
+
 }

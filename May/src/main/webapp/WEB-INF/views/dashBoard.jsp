@@ -156,6 +156,11 @@
   color: #333;
 }
 
+.box-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 </style>
 </head>
 <body>
@@ -172,12 +177,12 @@
 
     <div class="card">
       <h4>완료한 일정</h4>
-      <p class="big-number">18</p>
+      <p class="big-number" id="finshCount">0</p>
     </div>
 
     <div class="card">
       <h4>완료율</h4>
-      <p class="big-number">75%</p>
+      <p class="big-number" id="finshRate">0%</p>
     </div>
 
     <div class="card">
@@ -220,8 +225,10 @@
 
     <!-- 카테고리 관리 -->
     <div class="dashboard-box">
-      <h3>카테고리 관리</h3>
-      <button onclick="addCategory()">+ 카테고리 추가</button>
+      <div class="box-header">
+	    <h3>카테고리 관리</h3>
+	    <button class="add-category-btn" onclick="addCategory()">+ 추가</button>
+	  </div>
       <ul class="category-list" id="categoryList"></ul>
     </div>
 
@@ -243,7 +250,7 @@
     <div class="modal-btn">
       <button id="saveBtn" onclick="saveCategory()">저장</button>
       <button id="updateBtn" onclick="updateCategory()" style="display:none;">수정</button>
-  	  <button id="deleteBtn" onclick="deleteCategory()" style="display:none;">삭제</button>
+  	  <button id="deleteBtn" onclick="deleteCategoryModal()" style="display:none;">삭제</button>
     </div>
 
   </div>
@@ -255,6 +262,7 @@
 let now = new Date();
 let currentMonth = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, '0');
 let modalMode = "add";
+let currentCategoryNo = null;
 
 $(function(){
 	initDashBoard();
@@ -262,8 +270,8 @@ $(function(){
 
 function initDashBoard(){
 	selectMonthSc(currentMonth);
-	//selectFinshSc();
-	//selectFinshRate();
+	selectFinshSc(currentMonth);
+	selectFinshRate(currentMonth);
 	selectCategorySc(currentMonth);
 	selectCategoryType();
 	selectDdaySc(now);
@@ -280,6 +288,34 @@ function selectMonthSc(currentMonth){
 		},
 		success : function(s){
 			$("#monthCount").text(s);
+		}
+	})
+}
+
+//이번달 일정 완료
+function selectFinshSc(currentMonth){
+	$.ajax({
+		url : "selectFinshSc.do",
+		type : "get",
+		data : {
+			currentMonth : currentMonth
+		},
+		success : function(s){
+			$("#finshCount").text(s);
+		}
+	})
+}
+
+//이번달 일정 완료율
+function selectFinshRate(currentMonth){
+	$.ajax({
+		url : "selectFinshRate.do",
+		type : "get",
+		data : {
+			currentMonth : currentMonth
+		},
+		success : function(s){
+			$("#finshRate").text(s + "%");
 		}
 	})
 }
@@ -317,7 +353,8 @@ function selectCategoryType(){
 				html = "<li>등록된 카테고리가 없습니다.</li>";
 			}else{
 				for(let s of list){
-					html += "<li>" + s.categoryName + "</li>"
+					html += "<li> <span class='categorySelect' onclick='editCategory("+ s.categoryNo + ")'>"+ s.categoryName + "</span>"
+								+ "<span class='deleteBtn' onclick='deleteCategory(" + s.categoryNo + ")'> X </span></li>";
 				}
 			}
 			$("#categoryList").html(html);
@@ -342,7 +379,7 @@ function selectDdaySc(now){
 				html = "<li>다가오는 일정이 없습니다.</li>";
 			}else{
 				for(let s of list){
-					html += "<li> D- "+ s.countDay + s.title +"</li>";
+					html += "<li> D-"+ s.countDay + " " + s.title +"</li>";
 				}
 			}
 			$("#D_daySchedule").html(html);
@@ -378,6 +415,12 @@ function selectScheduleMonth(){
 //카테고리 추가 팝업
 function addCategory(){
     modalMode = "add";
+    
+    if(modalMode ==="add"){
+		$(".modal-content h3").text("카테고리 추가");
+	}else{
+		$(".modal-content h3").text("카테고리 수정");
+	}
     
     $("#categoryTitle").prop("readonly", false);
     $("#categoryMemo").prop("readonly", false);
@@ -431,15 +474,9 @@ function drawCategoryCart(list){
 		categoryChart.destroy();
 	}
 	
-	// 🔥 map + 화살표 함수 사용
-    //const labels = list.map(item => item.categoryName);
-    //const data   = list.map(item => item.count);
-    
-    //for문 버전
     const labels = [];
     const data = [];
 
-    // 🔥 전통적인 for문 사용
     for(let i = 0; i < list.length; i++){
         labels.push(list[i].categoryName);
         data.push(list[i].cnt);
@@ -520,7 +557,98 @@ function drawMonthCart(list){
 	});
 }
 
+function deleteCategory(categoryNo){
+	if(!confirm("카테고리를 삭제하시겠습니까?")) return;
+	$.ajax({
+		url : "deleteCategory.do",
+		type : "get",
+		data : {
+			categoryNo : categoryNo
+		},
+		success : function(result){
+			if(result.success){
+				alert("카테고리가 삭제되었습니다.");
+				selectCategorySc(currentMonth);
+				selectCategoryType();
+				selectCategoryMonthSc(currentMonth);
+			}else{
+				alert("삭제 실패");
+			}
+			},error : function(){
+				alert("서버 오류");
+		}
+	})
+}
 
+function editCategory(categoryNo){
+	modalMode="detail";
+	currentCategoryNo = categoryNo;
+	
+	if(modalMode ==="add"){
+		$(".modal-content h3").text("카테고리 추가");
+	}else{
+		$(".modal-content h3").text("카테고리 수정");
+	}
+	
+	$.ajax({
+		url : "selectCategoryDetail.do",
+		type : "get",
+		data : {
+			categoryNo : categoryNo
+		},
+		success : function(s){
+			
+			$("#categoryTitle").val(s.categoryName);
+			$("#categoryMemo").val(s.categoryMemo);
+			
+			$("#saveBtn").hide();
+			$("#updateBtn").show();
+			$("#deleteBtn").show();
+			
+			$("#categoryTitle").prop("readonly", false);
+			$("#categoryMemo").prop("readonly", false);
+			$("#categoryModal").css("display","flex");
+		},
+		error : function(){
+			alert("상세조회 실패");
+		}
+	})
+}
+
+function updateCategory(){
+	const categoryMemo = $("#categoryMemo").val();
+	$.ajax({
+		url : "updateCategory.do",
+		type : "post",
+		data : {
+			categoryNo : currentCategoryNo,
+			categoryName : $("#categoryTitle").val(),
+			categoryMemo : categoryMemo
+		},
+		success : function(result){
+			if(result.success){
+				alert("수정되었습니다.");
+				closeModal();
+				selectCategorySc(currentMonth);
+				selectCategoryType();
+				selectCategoryMonthSc(currentMonth);
+			}else{
+				alert("수정 실패");
+			}
+		},
+		error : function(){
+			alert("서버 오류 발생");
+		}
+	})
+}
+
+function deleteCategoryModal(){
+		deleteCategory(currentCategoryNo);
+		closeModal();
+		selectCategorySc(currentMonth);
+		selectCategoryType();
+		selectCategoryMonthSc(currentMonth);
+}
 </script>
 
 </body>

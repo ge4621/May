@@ -22,8 +22,14 @@ public class DashBoardDao {
 		Map<String, Object> param = new HashMap<String, Object>();
 		param.put("dashBoard", dashBoard);
 		param.put("userNo", userNo);
-		System.out.println(dashBoard);
 		return sqlSession.selectOne("selectMonthSchedule",param);
+	}
+	
+	public int selectFinshSc(DashBoard dashBoard, String userNo) {
+		Map<String, Object> param = new HashMap<String, Object>();
+		param.put("dashBoard", dashBoard);
+		param.put("userNo", userNo);
+		return sqlSession.selectOne("selectFinshSc",param);
 	}
 	
 	public List<DashBoard> selectCategoryCnt(DashBoard dashBoard, String userNo){
@@ -60,5 +66,26 @@ public class DashBoardDao {
 		param.put("schedule", schedule);
 		param.put("userNo", userNo);
 		return sqlSession.selectList("selectScheduleMonth",param);
+	}
+	
+	public int deleteCategory(Category category,String userNo){
+		Map<String, Object> param = new HashMap<String, Object>();
+		param.put("category", category);
+		param.put("userNo", userNo);
+		return sqlSession.delete("deleteCategory",param);
+	}
+	
+	public Category selectCategoryDetail(Category category,String userNo) {
+		Map<String, Object> param = new HashMap<String, Object>();
+		param.put("category", category);
+		param.put("userNo", userNo);
+		return sqlSession.selectOne("selectCategoryDetail",param);
+	}
+	
+	public int updateCategory(Category category,String userNo) {
+		Map<String, Object> param = new HashMap<String, Object>();
+		param.put("category", category);
+		param.put("userNo", userNo);
+		return sqlSession.update("updateCategory",param);
 	}
 }

@@ -10,6 +10,8 @@ public interface DashBoardService {
 	
 	int selectMonthSchedule(DashBoard dashBoard,String userNo);
 	
+	int selectFinshSc(DashBoard dashBoard,String userNo);
+	
 	List<DashBoard> selectCategoryCnt(DashBoard dashBoard, String userNo);
 	
 	int addCategory(DashBoard dashBoard,String userNo);
@@ -21,5 +23,11 @@ public interface DashBoardService {
 	List<Schedule> selectCategoryMonthSc(Schedule schedule, String userNo);
 	
 	List<Schedule> selectScheduleMonth(Schedule schedule, String userNo);
+	
+	int deleteCategory(Category category, String userNo);
+	
+	Category selectCategoryDetail(Category category, String userNo);
+	
+	int updateCategory(Category category, String userNo);
 
 }

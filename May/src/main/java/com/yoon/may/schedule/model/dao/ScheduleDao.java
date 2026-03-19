@@ -58,4 +58,10 @@ public class ScheduleDao {
 		return sqlSession.selectList("loadMonthSchedule",param);
 	}
 	
+	public int completeSchedule(Schedule schedule, String userNo) {
+		Map<String, Object> param = new HashMap<String, Object>();
+		param.put("schedule",schedule);
+		param.put("userNo",userNo);
+		return sqlSession.update("completeSchedule",param);
+	}
 }

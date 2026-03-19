@@ -284,6 +284,20 @@ body {
   color: #666;
 }
 
+.complete-btn {
+  margin-left: 10px;
+  padding: 4px 8px;
+  font-size: 12px;
+  border: none;
+  border-radius: 4px;
+  background: #4caf50;
+  color: white;
+  cursor: pointer;
+}
+
+.complete-btn:hover {
+  background: #43a047;
+}
 </style>
 </head>
 
@@ -555,7 +569,7 @@ function selectCategory(){
 	});
 }
 
-//모달 추기화
+//모달 초기화
 function initModal(mode = "add"){
 	if(mode =="add"){
 		// 공통 초기화
@@ -716,7 +730,6 @@ function saveSchedule(){
 }
 
 function loadSchedule(date){
-	console.log(date)
 	$.ajax({
 		url : "selectSchedule.do",
 		type : "get",
@@ -724,13 +737,17 @@ function loadSchedule(date){
 			startDate : date
 		},
 		success : function(list){
-			console.log(list)
 			let html = "";
 			if(!list || list.length == 0){
 				html = "<li>일정이 없습니다.</li>";
 			}else{
 				for(let s of list){
-					html += "<li onclick='openDetail(" + s.scheduleNo+ ")'>📌" + s.title + "</li>";
+					html += "<li>"
+						  + "<input type='checkbox' " + (s.status === 'DONE' ? "checked" : "") 
+						  + " onchange='completeSchedule(" + s.scheduleNo + ")'>"
+					      + "<span onclick='openDetail(" + s.scheduleNo + ")'>📌 " + s.title + "</span>"
+					      + "<button class='complete-btn' onclick='completeSchedule(" + s.scheduleNo + ")'>완료</button>"
+					      + "</li>";
 				}
 			}
 			$("#todoList").html(html);
@@ -739,6 +756,19 @@ function loadSchedule(date){
 			alert("일정 조회 시패");
 		}
 	});
+}
+
+function completeSchedule(scheduleNo){
+	$.ajax({
+		url : "completeSchedule.do",
+		type : "get",
+		data : {
+			scheduleNo : scheduleNo
+		},
+		success : function(s){
+			console.log(s)
+		}
+	})
 }
 
 //팝업창 닫기
