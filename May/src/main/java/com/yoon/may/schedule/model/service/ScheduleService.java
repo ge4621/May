@@ -21,4 +21,5 @@ public interface ScheduleService {
 	
 	int completeSchedule(Schedule schedule,String userNo);
 	
+	int completeUpdateSchedule(Schedule schedule,String userNo);
 }

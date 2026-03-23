@@ -49,4 +49,9 @@ public class ScheduleServiceImpl implements ScheduleService{
 		return scheduleDao.completeSchedule(schedule,userNo);
 	}
 
+	@Override
+	public int completeUpdateSchedule(Schedule schedule, String userNo) {
+		return scheduleDao.completeUpdateSchedule(schedule,userNo);
+	}
+
 }

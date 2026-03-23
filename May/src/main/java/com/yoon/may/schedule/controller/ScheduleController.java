@@ -155,13 +155,15 @@ public class ScheduleController {
 		Member loginMember = (Member)session.getAttribute("loginMember");
 		String userNo = loginMember.getUserNo();
 		
-		int completeSchedule = scheduleService.completeSchedule(schedule,userNo);
+		int res = 0;
 		
-		if(completeSchedule > 0) {
-			result.put("success", true);
+		if("DONE".equals(schedule.getStatus())) {
+			res = scheduleService.completeSchedule(schedule,userNo);			
 		}else {
-			result.put("success", false);
+			res = scheduleService.completeUpdateSchedule(schedule,userNo);			
 		}
+		
+		result.put("success", res>0);
 		return result;
 	}
 }

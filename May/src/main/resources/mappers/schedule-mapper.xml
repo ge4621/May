@@ -96,4 +96,11 @@
 		where user_no = #{userNo}
 		and schedule_no = #{schedule.scheduleNo}
 	</update>
+	
+	<update id ="completeUpdateSchedule">
+		update schedule
+		set status = 'TODO'
+		where user_no = #{userNo}
+		and schedule_no = #{schedule.scheduleNo}
+	</update>
 </mapper>

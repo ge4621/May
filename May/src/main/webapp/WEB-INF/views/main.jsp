@@ -744,9 +744,13 @@ function loadSchedule(date){
 				for(let s of list){
 					html += "<li>"
 						  + "<input type='checkbox' " + (s.status === 'DONE' ? "checked" : "") 
-						  + " onchange='completeSchedule(" + s.scheduleNo + ")'>"
-					      + "<span onclick='openDetail(" + s.scheduleNo + ")'>📌 " + s.title + "</span>"
-					      + "<button class='complete-btn' onclick='completeSchedule(" + s.scheduleNo + ")'>완료</button>"
+						  + " onchange='completeSchedule(" + s.scheduleNo + " , this.checked)'>"
+					      + "<span onclick='openDetail(" + s.scheduleNo + ")' "
+					      + (s.status === 'DONE' ? "style='text-decoration: line-through; color: gray;'" : "")
+					      + ">📌 " + s.title + "</span>"
+					      + "<button class='complete-btn' "
+					      + (s.status === 'TODO' ? "style='display:none'" : "")
+					      + ">완료</button>"
 					      + "</li>";
 				}
 			}
@@ -758,15 +762,17 @@ function loadSchedule(date){
 	});
 }
 
-function completeSchedule(scheduleNo){
+function completeSchedule(scheduleNo,isChecked){
+	console.log(isChecked)
 	$.ajax({
 		url : "completeSchedule.do",
 		type : "get",
 		data : {
-			scheduleNo : scheduleNo
+			scheduleNo : scheduleNo,
+			status : isChecked ? "DONE" : "TODO"
 		},
 		success : function(s){
-			console.log(s)
+			loadSchedule(selectedDateGlobal);
 		}
 	})
 }
